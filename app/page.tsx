@@ -1,13 +1,13 @@
-import { SectionTwoAndThree } from "@/public/ui/sectionTwoAndThree";
-import SectionTwo from "@/public/ui/sectionTwo";
-import { SectionTwoMain } from "@/public/ui/components/sectionTwoMain";
+import { SectionTwoAndThree } from "@/public/homeDir/ui/sectionTwoAndThree";
+import SectionTwo from "@/public/homeDir/ui/sectionTwo";
+import { SectionTwoMain } from "@/public/homeDir/components/sectionTwoMain";
 import UserProfileBarUi from "@/public/ui/UserProfileBarUi";
-import UserProfileBar from "@/public/ui/components/UserProfileBar";
-import SectionThree from "@/public/ui/sectionThree";
-import SectionOneAndFour from "@/public/ui/sectionOneAndFour";
-import SectionOne from "@/public/ui/sectionOne";
-import { TabBarComp } from "@/public/ui/components/TebBarComp";
-import { ToolBar } from "@/public/ui/components/toolBar";
+import UserProfileBar from "@/public/components/UserProfileBar";
+import SectionThree from "@/public/homeDir/ui/sectionThree";
+import SectionOneAndFour from "@/public/homeDir/ui/sectionOneAndFour";
+import SectionOne from "@/public/homeDir/ui/sectionOne";
+import { TabBarComp } from "@/public/homeDir/components/TebBarComp";
+import { ToolBar } from "@/public/homeDir/components/toolBar";
 
 export default function Home() {
   return (

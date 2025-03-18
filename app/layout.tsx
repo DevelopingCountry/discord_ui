@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import SideUi from "@/public/ui/sideUi";
-import ServerIconButton from "@/public/ui/components/serverIconButton";
+import ServerIconButton from "@/public/components/serverIconButton";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
