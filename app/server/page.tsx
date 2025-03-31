@@ -9,16 +9,7 @@ import SectionOne from "@/public/homeDir/ui/sectionOne";
 import { TabBarComp } from "@/public/homeDir/components/TebBarComp";
 import { ToolBar } from "@/public/homeDir/components/toolBar";
 import SectionFour from "@/public/homeDir/ui/sectionFour";
-import SearchFriend from "@/public/homeDir/components/searchFriend";
-
-export default async function Home() {
-  const friendsDatas = await fetch("http://localhost:8080/servers");
-  const friendsDatasjson: { name: string }[] = await friendsDatas.json();
-
-  /*
-    데이터를 가져와서 SearchFriend에 넣어줘야됌 -> INPUT : 나의 친구들 모두
-   */
-
+export default function Home() {
   return (
     <div className={"flex flex-1 bg-amber-200"}>
       <SectionTwoAndThree>
@@ -96,10 +87,20 @@ export default async function Home() {
           {/*    </ul>*/}
           {/*  </div>*/}
           {/*</PeopleColumn>*/}
-          <SearchFriend friends={friendsDatasjson} />
-          <div className={"min-w-[358px] bg-amber-50 hidden xl:block justify-center"}>
-            <div className={"h-full w-full flex justify-center items-center"}>친구없음</div>
+          <div className={"bg-discord1and4 flex-1 overflow-y-auto max-h-[calc(100vh-48px)] custom-scrollbar"}>
+            <ul>
+              <li className={"h-44 text-amber-50  mb-3 flex justify-center items-center"}>채팅내역 </li>
+              <li className={"h-44 text-amber-50  mb-3 flex justify-center items-center"}>채팅내역 </li>
+              <li className={"h-44 text-amber-50  mb-3 flex justify-center items-center"}>채팅내역 </li>
+              <li className={"h-44 text-amber-50  mb-3 flex justify-center items-center"}>채팅내역 </li>
+              <li className={"h-44 text-amber-50  mb-3 flex justify-center items-center"}>채팅내역 </li>
+              <li className={"h-44 text-amber-50  mb-3 flex justify-center items-center"}>채팅내역 </li>
+              <li className={"h-44 text-amber-50  mb-3 flex justify-center items-center"}>채팅내역 </li>
+            </ul>
           </div>
+          {/*<div className={"min-w-[358px] bg-amber-50 hidden xl:block justify-center"}>*/}
+          {/*  <div className={"h-full w-full flex justify-center items-center"}>친구없음</div>*/}
+          {/*</div>*/}
         </SectionFour>
         {/*<div className={"flex-1 flex bg-amber-800"}>*/}
         {/*  <div className={"flex-1 flex flex-col"}>*/}

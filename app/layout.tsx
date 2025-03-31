@@ -21,20 +21,25 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body>
-        <div className="bg-slate-400 w-screen h-screen flex overflow-x-hidden">
+        <div className="bg-discordSidebar w-screen h-screen  flex overflow-x-hidden">
           <SideUi>
             <ul>
-              <ServerIconButton
-                imageUrl={"/assets/discord_blue.png"}
-                name={"me"}
-              />
-              <ServerIconButton
-                imageUrl={"/assets/discord_blue.png"}
-                name={"me"}
-              />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
+              <ServerIconButton imageUrl={"/assets/discord_blue.png"} name={"me"} />
             </ul>
           </SideUi>
-
           {children}
         </div>
       </body>
