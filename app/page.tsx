@@ -10,57 +10,41 @@ import { TabBarComp } from "@/public/homeDir/components/TebBarComp";
 import { ToolBar } from "@/public/homeDir/components/toolBar";
 import SectionFour from "@/public/homeDir/ui/sectionFour";
 import SearchFriend from "@/public/homeDir/components/searchFriend";
+import SectionThreeMain from "@/public/homeDir/components/sectionThree";
+
+export type friendsDataType = {
+  name: string;
+  imageUrl: string;
+  friendStatus: string;
+}[];
 
 export default async function Home() {
-  const friendsDatas = await fetch("http://localhost:8080/servers");
-  const friendsDatasjson: { name: string }[] = await friendsDatas.json();
-
-  /*
-    데이터를 가져와서 SearchFriend에 넣어줘야됌 -> INPUT : 나의 친구들 모두
-   */
-
+  // const friendsDatas = await fetch("http://localhost:8080/friends");
+  // const friendsDatasjson: { name: string,imageUrl : string }[] = await friendsDatas.json();
+  const friendsDatasjson: friendsDataType = [
+    { name: "김성준", imageUrl: "image1", friendStatus: "PENDING" },
+    { name: "이원빈", imageUrl: "image2", friendStatus: "REJECTED" },
+    { name: "이소연", imageUrl: "image3", friendStatus: "ACCEPTED" },
+    { name: "이소연", imageUrl: "image4", friendStatus: "REJECTED" },
+    { name: "adb", imageUrl: "adb", friendStatus: "PENDING" },
+    { name: "QRSN", imageUrl: "QRSN", friendStatus: "ACCEPTED" },
+  ];
+  // const dmDatas = await fetch("http://localhost:8080/channels/dm");
+  // const dmDatasJson: { id:number, oppenentName: string }[] = dmDatas.json();
+  const dmDatasJson: { id: number; oppenentName: string }[] = [
+    { id: 1, oppenentName: "이소연" },
+    { id: 2, oppenentName: "김성준" },
+    { id: 3, oppenentName: "이원빈" },
+    { id: 4, oppenentName: "이원빈" },
+  ];
   return (
-    <div className={"flex flex-1 bg-amber-200"}>
+    <div className={"flex flex-1"}>
       <SectionTwoAndThree>
         <SectionTwo>
           <SectionTwoMain />
         </SectionTwo>
         <SectionThree>
-          <ul>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-            <li className={"text-amber-50"}>aa</li>
-          </ul>
+          <SectionThreeMain dmDatasJson={dmDatasJson} />
         </SectionThree>
         <UserProfileBarUi>
           <UserProfileBar
@@ -97,8 +81,8 @@ export default async function Home() {
           {/*  </div>*/}
           {/*</PeopleColumn>*/}
           <SearchFriend friends={friendsDatasjson} />
-          <div className={"min-w-[358px] bg-amber-50 hidden xl:block justify-center"}>
-            <div className={"h-full w-full flex justify-center items-center"}>친구없음</div>
+          <div className={"min-w-[358px] bg-discordDark hidden xl:block justify-center shadow-elevationLeft"}>
+            <div className={"h-full w-full flex justify-center items-center text-white"}>메모장</div>
           </div>
         </SectionFour>
         {/*<div className={"flex-1 flex bg-amber-800"}>*/}
