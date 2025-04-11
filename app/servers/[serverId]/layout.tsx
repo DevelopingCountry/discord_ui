@@ -31,7 +31,7 @@ export default async function ServerRayout({
       <ChannelHydrator channels={channelsData} />
       <SectionTwoAndThree>
         <SectionTwo>
-          <ServerName serverId={serverId} />
+          <ServerName />
         </SectionTwo>
         <SectionThree>
           <ChannelSidebar channelsData={channelsData} serverId={serverId} />
