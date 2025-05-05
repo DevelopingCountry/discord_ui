@@ -1,15 +1,18 @@
 "use client";
 
 import { useEffect } from "react";
-import { useServerStore } from "@/components/store/serverStore";
+import { useServerStore } from "@/components/store/use-server-store";
+import { server } from "@/components/type/response";
 
-type servers = { id: number; name: string; imageUrl: string };
-
-export const ServerHydrator = ({ servers }: { servers: servers[] }) => {
+export const ServerHydrator = ({ servers }: { servers: server[] }) => {
   const { setServers } = useServerStore();
 
+  // useLayoutEffect(() => {
+  //   setServers(servers);
+  // }, [servers, setServers]);
   useEffect(() => {
     setServers(servers);
+    console.log("hydrate component");
   }, [servers, setServers]);
 
   return null;

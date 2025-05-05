@@ -2,18 +2,19 @@
 
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { useServerStore } from "@/components/store/serverStore";
+import { useServerStore } from "@/components/store/use-server-store";
 import { useState, useRef } from "react";
 import ServerDropdown from "./server-dropdown";
 
 export default function ServerName() {
-  const s = usePathname().split("/")[2];
+  const serverId = usePathname().split("/")[2];
+  console.log("현재 서버 name" + serverId);
   const [isActive, setIsActive] = useState(false);
   const { servers } = useServerStore();
+  console.log(servers);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const currentServer = servers.find((server) => server.id === Number(s));
-  console.log("currentServer" + currentServer);
+  const currentServer = servers.find((server) => server.id === serverId);
+  console.log("currentServer ", currentServer);
   const clickHandler = () => {
     setIsActive(!isActive);
   };
@@ -34,6 +35,8 @@ export default function ServerName() {
       </div>
 
       <ServerDropdown
+        currentServer={currentServer}
+        serverId={serverId}
         isOpen={isActive}
         onClose={() => setIsActive(!isActive)}
         serverName={currentServer?.name || "서버 이름 없음"}

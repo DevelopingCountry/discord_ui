@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect } from "react";
-import { useChannelStore } from "@/components/store/useSearchStore";
+import { useChannelStore } from "@/components/store/use-channel-store";
+import { channel } from "@/components/type/response";
 
-type Channel = { id: number; name: string; type: string };
-
-export const ChannelHydrator = ({ channels }: { channels: Channel[] }) => {
+export const ChannelHydrator = ({ channels }: { channels: channel[] }) => {
   const { setChannels } = useChannelStore();
 
   useEffect(() => {

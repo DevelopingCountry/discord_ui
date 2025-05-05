@@ -7,6 +7,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from "@/components/ui/input";
 import { Camera, Plus, X } from "lucide-react";
 import { useState } from "react";
+import { useCreateServer } from "@/components/hooks/use-create-server";
+import Image from "next/image";
 
 interface CustomizeServerModalProps {
   isOpen: boolean;
@@ -17,6 +19,7 @@ interface CustomizeServerModalProps {
 export const CustomizeServerModal = ({ isOpen, onClose, onBack }: CustomizeServerModalProps) => {
   const [serverName, setServerName] = useState("김태완님의 서버");
   const [serverImage, setServerImage] = useState<string | null>(null);
+  const { mutate } = useCreateServer();
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -29,10 +32,25 @@ export const CustomizeServerModal = ({ isOpen, onClose, onBack }: CustomizeServe
     }
   };
 
+  // const handleSubmit = () => {
+  //   // 여기에 서버 생성 로직 추가
+  //   console.log("서버 생성:", { name: serverName, image: serverImage });
+  //   onClose();
+  // };
   const handleSubmit = () => {
-    // 여기에 서버 생성 로직 추가
-    console.log("서버 생성:", { name: serverName, image: serverImage });
-    onClose();
+    console.log("서버만들기");
+    mutate(
+      { serverName: serverName, imageUrl: serverImage },
+      {
+        onSuccess: () => {
+          onClose(); // 모달 닫기
+        },
+        onError: (err) => {
+          console.error("서버 생성 실패:", err);
+          // 필요하면 toast.error("서버 생성에 실패했습니다."); 등 추가 가능
+        },
+      },
+    );
   };
 
   return (
@@ -65,7 +83,7 @@ export const CustomizeServerModal = ({ isOpen, onClose, onBack }: CustomizeServe
                 }`}
               >
                 {serverImage ? (
-                  <img
+                  <Image
                     src={serverImage || "/placeholder.svg"}
                     alt="Server Icon"
                     className="w-full h-full object-cover"

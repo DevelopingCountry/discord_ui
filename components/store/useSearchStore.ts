@@ -17,15 +17,3 @@ export const useActiveStore = create<ActiveState>((set) => ({
   isActive: "모두",
   setIsActive: (active) => set({ isActive: active }),
 }));
-
-type Channel = { id: number; name: string; type: string };
-
-interface ChannelState {
-  channels: Channel[];
-  setChannels: (channels: Channel[]) => void;
-}
-
-export const useChannelStore = create<ChannelState>((set) => ({
-  channels: [],
-  setChannels: (channels) => set({ channels }),
-}));

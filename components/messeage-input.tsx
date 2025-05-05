@@ -5,8 +5,14 @@ import { Input } from "@/components/ui/input";
 import { AtSign, PlusCircle, Smile, Sticker } from "lucide-react";
 import { useState } from "react";
 
-export default function MessageInput() {
+export default function MessageInput({ onSend }: { onSend: (message: string) => void }) {
   const [message, setMessage] = useState("");
+
+  const handleSend = () => {
+    if (!message.trim()) return;
+    onSend(message);
+    setMessage("");
+  };
 
   return (
     <div className="px-4 pb-6">
@@ -22,7 +28,8 @@ export default function MessageInput() {
         <Input
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Message #general"
+          placeholder="Message your friend..."
+          onKeyDown={(e) => e.key === "Enter" && handleSend()}
           className="pl-12 pr-32 py-3 bg-[#383a40] border-none text-[#dcddde] placeholder:text-[#96989d] rounded-lg focus-visible:ring-0 focus-visible:ring-offset-0"
         />
 

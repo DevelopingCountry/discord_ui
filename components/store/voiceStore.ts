@@ -2,12 +2,12 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface VoiceStore {
-  connectedChannelId: number | null;
-  channelParticipants: Record<number, string[]>;
-  connectToVoice: (channelId: number) => void;
+  connectedChannelId: string | null;
+  channelParticipants: Record<string, string[]>;
+  connectToVoice: (channelId: string) => void;
   disconnectFromVoice: () => void;
-  addParticipant: (channelId: number, userId: string) => void;
-  removeParticipant: (channelId: number, userId: string) => void;
+  addParticipant: (channelId: string, userId: string) => void;
+  removeParticipant: (channelId: string, userId: string) => void;
 }
 
 export const useVoiceStore = create(

@@ -5,45 +5,48 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup } from "@/components/ui/radio-group";
-import { Switch } from "@/components/ui/switch";
-import { Hash, Lock, Volume2, X } from "lucide-react";
+import { Hash, Volume2, X } from "lucide-react";
 import { useState } from "react";
+import { useCreateChannel } from "@/components/hooks/use-create-channel";
 
 interface CreateChannelModalProps {
   isOpen: boolean;
   onClose: () => void;
   serverId: string;
-  onCreateChannel?: (data: { name: string; type: "text" | "voice"; isPrivate: boolean }) => void;
-  defaultType: string;
+  defaultType: "CHAT" | "VOICE";
 }
 
-export const CreateChannelModal = ({ isOpen, onClose, onCreateChannel, defaultType }: CreateChannelModalProps) => {
-  const [channelType, setChannelType] = useState<"text" | "voice">("text");
+export const CreateChannelModal = ({ isOpen, onClose, serverId, defaultType }: CreateChannelModalProps) => {
+  const [channelType, setChannelType] = useState<"CHAT" | "VOICE">("CHAT");
   const [channelName, setChannelName] = useState("");
-  const [isPrivate, setIsPrivate] = useState(false);
-
-  const handleSubmit = () => {
-    if (!channelName.trim()) return;
-
-    if (onCreateChannel) {
-      onCreateChannel({
-        name: channelName.trim(),
-        type: channelType,
-        isPrivate,
-      });
-    }
-
-    // 모달 닫기 및 상태 초기화
-    handleClose();
-  };
+  const { mutate } = useCreateChannel();
 
   const handleClose = () => {
-    setChannelType("text");
     setChannelName("");
-    setIsPrivate(false);
     onClose();
   };
-
+  const handleCreateChannel = () => {
+    console.log("새 채널 생성:");
+    console.log("새 채널 이름:", channelName);
+    console.log("현 서버 id", serverId);
+    mutate(
+      {
+        channelName: channelName,
+        type: defaultType,
+        serverId: serverId, // ✅ 여기 같이 넘김
+      },
+      {
+        onSuccess: () => {
+          onClose(); // 모달 닫기
+        },
+        onError: (err) => {
+          console.error("채널 생성 실패:", err);
+          // 필요하면 toast.error("서버 생성에 실패했습니다."); 등 추가 가능
+        },
+      },
+    );
+    // 여기에 채널 생성 로직 추가
+  };
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="bg-[#313338] text-white border-none max-w-md">
@@ -60,8 +63,8 @@ export const CreateChannelModal = ({ isOpen, onClose, onCreateChannel, defaultTy
         <div className="space-y-4 py-4">
           <div className="space-y-2">
             <h4 className="text-xs font-semibold text-[#B5BAC1]">채널 유형</h4>
-            <RadioGroup value={channelType} onValueChange={(value) => setChannelType(value as "text" | "voice")}>
-              {defaultType === "text" ? (
+            <RadioGroup value={channelType} onValueChange={(value) => setChannelType(value as "CHAT" | "VOICE")}>
+              {defaultType === "CHAT" ? (
                 <div className="flex items-center space-x-2 rounded-md p-2 hover:bg-[#3F4147]">
                   <div className="flex-1">
                     <Label htmlFor="text" className="text-sm font-medium">
@@ -86,7 +89,7 @@ export const CreateChannelModal = ({ isOpen, onClose, onCreateChannel, defaultTy
           <div className="space-y-2">
             <h4 className="text-xs font-semibold text-[#B5BAC1]">채널 이름</h4>
             <div className="relative">
-              {defaultType === "text" ? (
+              {defaultType === "CHAT" ? (
                 <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#B5BAC1]" />
               ) : (
                 <Volume2 className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#B5BAC1]" />
@@ -101,18 +104,18 @@ export const CreateChannelModal = ({ isOpen, onClose, onCreateChannel, defaultTy
           </div>
 
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Lock className="h-4 w-4 text-[#B5BAC1]" />
-                <h4 className="text-sm font-medium">비공개 채널</h4>
-              </div>
-              <Switch
-                checked={isPrivate}
-                onCheckedChange={setIsPrivate}
-                className="data-[state=checked]:bg-[#5865f2]"
-              />
-            </div>
-            <p className="text-xs text-[#B5BAC1] pl-6">선택한 멤버들과 역할만 이 채널을 볼 수 있어요.</p>
+            {/*<div className="flex items-center justify-between">*/}
+            {/*  <div className="flex items-center gap-2">*/}
+            {/*    <Lock className="h-4 w-4 text-[#B5BAC1]" />*/}
+            {/*    <h4 className="text-sm font-medium">비공개 채널</h4>*/}
+            {/*  </div>*/}
+            {/*  <Switch*/}
+            {/*    checked={isPrivate}*/}
+            {/*    onCheckedChange={setIsPrivate}*/}
+            {/*    className="data-[state=checked]:bg-[#5865f2]"*/}
+            {/*  />*/}
+            {/*</div>*/}
+            {/*<p className="text-xs text-[#B5BAC1] pl-6">선택한 멤버들과 역할만 이 채널을 볼 수 있어요.</p>*/}
           </div>
         </div>
 
@@ -121,7 +124,7 @@ export const CreateChannelModal = ({ isOpen, onClose, onCreateChannel, defaultTy
             취소
           </Button>
           <Button
-            onClick={handleSubmit}
+            onClick={handleCreateChannel}
             className="bg-[#5865F2] hover:bg-[#4752C4] text-white"
             disabled={!channelName.trim()}
           >

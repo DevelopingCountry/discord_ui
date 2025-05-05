@@ -58,48 +58,6 @@ export const CreateServerModal = ({ isOpen, onClose }: CreateServerModalProps) =
                 label="직접 만들기"
                 onClick={handleCreateOwn}
               />
-
-              {/*<div className="text-left text-xs text-[#B5BAC1] mt-4 mb-2 px-2">템플릿으로 시작</div>*/}
-
-              {/*<ServerOption*/}
-              {/*  icon={*/}
-              {/*    <div className="bg-[#5865F2] p-2 rounded-full">*/}
-              {/*      <GamepadIcon className="h-5 w-5 text-white" />*/}
-              {/*    </div>*/}
-              {/*  }*/}
-              {/*  label="게임"*/}
-              {/*  onClick={() => {}}*/}
-              {/*/>*/}
-
-              {/*<ServerOption*/}
-              {/*  icon={*/}
-              {/*    <div className="bg-[#EB459E] p-2 rounded-full">*/}
-              {/*      <Heart className="h-5 w-5 text-white" />*/}
-              {/*    </div>*/}
-              {/*  }*/}
-              {/*  label="친구"*/}
-              {/*  onClick={() => {}}*/}
-              {/*/>*/}
-
-              {/*<ServerOption*/}
-              {/*  icon={*/}
-              {/*    <div className="bg-[#FEE75C] p-2 rounded-full">*/}
-              {/*      <Users className="h-5 w-5 text-black" />*/}
-              {/*    </div>*/}
-              {/*  }*/}
-              {/*  label="스터디 그룹"*/}
-              {/*  onClick={() => {}}*/}
-              {/*/>*/}
-
-              {/*<ServerOption*/}
-              {/*  icon={*/}
-              {/*    <div className="bg-[#57F287] p-2 rounded-full">*/}
-              {/*      <School className="h-5 w-5 text-white" />*/}
-              {/*    </div>*/}
-              {/*  }*/}
-              {/*  label="학교 클럽"*/}
-              {/*  onClick={() => {}}*/}
-              {/*/>*/}
             </div>
 
             <div className="mt-6 pt-6 border-t border-[#3F4147]">

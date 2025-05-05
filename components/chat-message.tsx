@@ -1,19 +1,66 @@
+"use client";
 import Image from "next/image";
 import { MessageCircle } from "lucide-react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useDmStore } from "@/components/store/use-dm-store";
+import { DmList } from "@/components/type/response";
+import { useRouter } from "next/navigation";
 
 export default function ChatMessage({
   name,
   status,
   avatar,
+  id,
   isOnline = false,
   isPlaying = false,
 }: {
   name: string;
   status: string;
+  id: string;
   avatar?: string | null;
   isOnline?: boolean;
   isPlaying?: boolean;
 }) {
+  const [dmId, setDmId] = useState<string | null>(null);
+  const { dmList, addDm } = useDmStore();
+  const route = useRouter();
+  const body = {
+    targetId: id,
+  };
+  const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+  const clickHandle = () => {
+    console.log("clickHandle");
+    console.log("body", body);
+    console.log("token", token);
+    axios
+      .post(`http://localhost:8080/dm`, body, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        const newDm: DmList = res.data.response;
+        setDmId(newDm.dmId);
+        console.log("New DM created:", newDm);
+        console.log("dmId:", dmId);
+
+        // Zustand store의 addDm 함수 호출
+        addDm(newDm);
+        console.log("DM 리스트 업데이트 완료");
+
+        // 페이지 이동 전 약간의 지연
+        setTimeout(() => {
+          route.push(`/channels/me/${newDm.dmId}`);
+        }, 0);
+      })
+      .catch((err) => console.error("❌ dm생성 실패:", err));
+    console.log("dmList", dmList);
+    console.log("click");
+    // route.push(`/channels/me/${dmId}`);
+  };
+  useEffect(() => {
+    // 상태가 변경된 후 dmList 값 확인
+    console.log("dmList has been updated:", dmList);
+  }, [dmList]); // dmList가 변경될 때마다 실행됨
   return (
     <div className="flex items-center px-2 py-3 rounded hover:bg-[#35373c] cursor-pointer group">
       <div className="relative mr-3">
@@ -41,7 +88,7 @@ export default function ChatMessage({
         <div className="text-[#b5bac1] text-sm">{status}</div>
       </div>
       <div className="flex space-x-2">
-        <button className="w-9 h-9 rounded-full bg-[#2b2d31] flex items-center justify-center">
+        <button className="w-9 h-9 rounded-full bg-[#2b2d31] flex items-center justify-center" onClick={clickHandle}>
           <MessageCircle className="w-5 h-5 text-[#b5bac1]" />
         </button>
         <button className="w-9 h-9 rounded-full bg-[#2b2d31] flex items-center justify-center">
