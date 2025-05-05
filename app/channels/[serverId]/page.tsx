@@ -1,6 +1,5 @@
 import SectionOne from "@/public/homeDir/ui/sectionOne";
 import SectionFour from "@/public/homeDir/ui/sectionFour";
-import MessageInput from "@/components/messeage-input";
 import SectionOneAndFour from "@/public/homeDir/ui/sectionOneAndFour";
 
 export default function Home() {
@@ -11,9 +10,7 @@ export default function Home() {
       </SectionOne>
       <SectionFour>
         <div className={"flex items-center justify-center text-white"}>welcomePage</div>
-        <div className={"absolute bottom-0 z-20 w-full bg-discord1and4"}>
-          <MessageInput />
-        </div>
+        <div className={"absolute bottom-0 z-20 w-full bg-discord1and4"}>{/*<MessageInput />*/}</div>
       </SectionFour>
     </SectionOneAndFour>
   );
