@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import axios from "axios";
@@ -32,9 +32,10 @@ type Message = {
 export default function DmChat({ dmId }: { dmId: string | undefined }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [client, setClient] = useState<Client | null>(null);
-
+  const scrollRef = useRef<HTMLDivElement>(null);
   const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-  const currentUserId = typeof window !== "undefined" ? Number(localStorage.getItem("userId")) : null;
+  // const currentUserId = typeof window !== "undefined" ? Number(localStorage.getItem("userId")) : null;
+  const currentUserId = "567717671374688256";
 
   useEffect(() => {
     if (!token || !dmId) return;
@@ -144,10 +145,21 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
   };
 
   const groupedMessages = groupMessagesByDateAndUser(messages);
-
+  const scrollToBottom = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+  // max-h-[calc(100vh-48px)]
   return (
     <SectionFour>
-      <div className="bg-discord1and4 flex-1 overflow-y-auto max-h-[calc(100vh-48px)] custom-scrollbar relative px-4 py-6 w-full">
+      <div
+        ref={scrollRef}
+        className="bg-discord1and4 flex-1 overflow-y-auto max-h-[calc(100vh-48px)] custom-scrollbar relative px-4 py-6 w-full"
+      >
         {groupedMessages.map((group, index) => (
           <div key={index}>
             <div className="text-center text-gray-400 text-sm my-6 w-full">{group.dateLabel}</div>
@@ -155,28 +167,45 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
               const isMine = g.userId === currentUserId;
               return (
                 <div key={i} className={`flex w-full ${isMine ? "justify-end" : "justify-start"} mb-4 `}>
-                  {!isMine && (
-                    <Image
-                      src={g.avatarUrl || "/default-avatar.png"}
-                      alt={"d"}
-                      className="w-8 h-8 rounded-full mr-2 mt-1"
-                    />
-                  )}
-                  <div className={`w-full ${isMine ? "text-right" : ""} `}>
+                  {/*{!isMine && (*/}
+                  {/*  <Image*/}
+                  {/*    src={g.avatarUrl || "/assets/discord_blue.png"}*/}
+                  {/*    alt={"d"}*/}
+                  {/*    width={32}*/}
+                  {/*    height={32}*/}
+                  {/*    className="w-8 h-8 rounded-full mr-2 mt-1"*/}
+                  {/*  />*/}
+                  {/*)}*/}
+                  <Image
+                    src={g.avatarUrl || "/assets/discord_blue.png"}
+                    alt={"d"}
+                    width={32}
+                    height={32}
+                    className="w-8 h-8 rounded-full mr-2 mt-1"
+                  />
+                  {/*${isMine ? "text-right" : ""}*/}
+                  <div className={"w-full"}>
                     <div className={"flex items-center"}>
-                      {!isMine && <div className="text-sm text-gray-300 font-bold mb-1 mt-2">{g.nickName}</div>}
+                      <div className="text-sm text-gray-300 font-bold mb-1 mt-2">{g.nickName}</div>
                       <div className="text-xs text-gray-400 mt-1 ml-2">{g.timeLabel}</div>
                     </div>
                     {g.messages.map((line, idx) => (
                       <div key={idx} className="w-full my-[2px] flex group relative">
                         <div
-                          className={`p-3 rounded-lg break-words w-full  ${
-                            isMine ? "bg-[#5865f2] text-white ml-auto" : "bg-[#2f3136] text-gray-100"
+                          className={`p-3 rounded-lg break-words w-full ${
+                            isMine ? "bg-[#5865f2] text-white ml-auto" : "bg-[#5865f2] text-white"
                           }`}
                         >
                           {line}
                         </div>
-                        {/*<div className={"group-hover:block hidden cursor-pointer"}>✏️</div>*/}
+                        <div
+                          className={`${isMine ? "absolute top-1/2 -translate-y-1/2 right-2 group-hover:block hidden cursor-pointer" : "hidden"}`}
+                          onClick={() => {
+                            console.log("clicked");
+                          }}
+                        >
+                          ✏️
+                        </div>
                       </div>
                     ))}
                   </div>

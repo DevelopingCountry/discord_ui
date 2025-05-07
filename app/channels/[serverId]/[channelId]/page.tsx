@@ -43,6 +43,7 @@ export default function Home() {
   const currentChannel = channels.find((channel) => channel.id === channelId);
   const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
   const currentUserId = typeof window !== "undefined" ? Number(localStorage.getItem("userId")) : null;
+  // const currentUserId = "567717671374688256";
   const [messages, setMessages] = useState<ChannelMessage[]>([]);
   const [client, setClient] = useState<Client | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -217,12 +218,17 @@ export default function Home() {
                 <div className="text-center text-gray-400 text-sm my-6 w-full">{group.dateLabel}</div>
                 {group.messageGroups.map((g, i) => {
                   const isMine = g.userId === currentUserId;
+                  console.log(isMine);
+                  console.log(g.userId);
+                  console.log(currentUserId);
                   return (
                     <div key={i} className={`flex w-full ${isMine ? "justify-end" : "justify-start"} mb-4 `}>
                       {!isMine && (
                         <Image
-                          src={g.avatarUrl || "/default-avatar.png"}
+                          src={g.avatarUrl || "/assets/discord_blue.png"}
                           alt={"b"}
+                          width={32}
+                          height={32}
                           className="w-8 h-8 rounded-full mr-2 mt-1"
                         />
                       )}
