@@ -5,7 +5,6 @@ import { useAuth } from "@/components/context/AuthContext";
 import { useChannelStore } from "@/components/store/use-channel-store";
 
 export const useCreateChannel = () => {
-  const addChannel = useChannelStore((state) => state.addChannel);
   const channels = useChannelStore((state) => state.channels);
   const { accessToken } = useAuth();
   return useMutation({
@@ -23,7 +22,7 @@ export const useCreateChannel = () => {
     },
     onSuccess: (newChannelData) => {
       console.log("📦 받은 채널:", newChannelData);
-      addChannel(newChannelData.response);
+      // addChannel(newChannelData.response);
 
       // 서버 응답에 맞춰서!
       console.log(channels);
