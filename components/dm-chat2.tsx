@@ -112,7 +112,18 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
       alert("❌ 수정 실패");
     }
   };
-
+  const deleteMessage = async (messageId: string) => {
+    try {
+      await axios.delete(`http://localhost:8080/dm/${dmId}/message/${messageId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("✅ 메시지 삭제 완료");
+      setMessages((prev) => prev.filter((msg) => msg.messageId !== messageId));
+    } catch (err) {
+      console.error("❌ 메시지 삭제 실패:", err);
+      alert("❌ 삭제 실패");
+    }
+  };
   const groupMessages = (messages: Message[]): GroupedDay[] => {
     const grouped: GroupedDay[] = [];
     let currentDate = "";
@@ -239,11 +250,18 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
                           </div>
                         )}
                         {isMine && !editingMessage && (
-                          <div
-                            className="absolute top-1/2 -translate-y-1/2 right-2 group-hover:block hidden cursor-pointer"
-                            onClick={() => setEditingMessage({ messageId: msg.messageId, content: msg.content })}
-                          >
-                            ✏️
+                          <div className="absolute top-1/2 -translate-y-1/2 right-2 flex gap-2 group-hover:flex hidden cursor-pointer">
+                            <span onClick={() => setEditingMessage({ messageId: msg.messageId, content: msg.content })}>
+                              ✏️
+                            </span>
+                            <span
+                              onClick={() => {
+                                const confirmed = confirm("정말 이 메시지를 삭제하시겠습니까?");
+                                if (confirmed) deleteMessage(msg.messageId);
+                              }}
+                            >
+                              🗑️
+                            </span>
                           </div>
                         )}
                       </div>
