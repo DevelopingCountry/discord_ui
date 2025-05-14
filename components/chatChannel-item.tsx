@@ -8,10 +8,12 @@ export default function ChatChannelItem({
   name,
   channelId,
   serverId,
+  creatorId,
 }: {
   name: string;
   channelId: string;
   serverId: string;
+  creatorId: string;
 }) {
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
   const s = usePathname();
@@ -49,7 +51,7 @@ export default function ChatChannelItem({
   return (
     <>
       <div
-        className={`flex items-center gap-1.5 px-2 py-1 rounded text-sm ${
+        className={`flex items-center gap-1.5 px-2 py-1 rounded text-sm cursor-pointer ${
           isActive ? "bg-[#393c41] text-white" : "text-[#96989d] hover:text-white hover:bg-[#35373c]"
         }`}
         onClick={handleChannelClick}
@@ -66,6 +68,7 @@ export default function ChatChannelItem({
           onClose={handleCloseContextMenu}
           channelId={channelId}
           serverId={serverId}
+          creatorId={creatorId}
           channelName={name}
         />
       )}

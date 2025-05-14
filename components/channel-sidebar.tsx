@@ -48,7 +48,12 @@ export default function ChannelSidebar({ serverId }: { serverId: string }) {
                 .filter((channel) => channel.type === "CHAT")
                 .map((channel, index) => (
                   <li key={index}>
-                    <ChatChannelItem name={channel.name} channelId={channel.id} serverId={serverId} />
+                    <ChatChannelItem
+                      name={channel.name}
+                      channelId={channel.id}
+                      serverId={serverId}
+                      creatorId={channel.creatorId}
+                    />
                   </li>
                 ))}
             </ul>
