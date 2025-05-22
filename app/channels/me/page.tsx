@@ -17,10 +17,12 @@ export default function Home() {
         {/*<ToolBar />*/}
       </SectionOne>
       <SectionFour>
-        {state === "getFriends" ? <SearchFriend /> : <AddFriend />}
+        <div className={"flex"}>
+          {state === "getFriends" ? <SearchFriend /> : <AddFriend />}
 
-        <div className={"min-w-[358px] bg-discordDark hidden xl:block justify-center shadow-elevationLeft"}>
-          <div className={"h-full w-full flex justify-center items-center text-white"}>메모장</div>
+          <div className={"min-w-[358px] bg-discordDark hidden xl:block justify-center shadow-elevationLeft"}>
+            <div className={"h-full w-full flex justify-center items-center text-white"}>메모장</div>
+          </div>
         </div>
       </SectionFour>
     </>
