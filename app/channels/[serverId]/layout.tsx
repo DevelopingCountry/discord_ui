@@ -2,7 +2,6 @@ import { SectionTwoAndThree } from "@/public/homeDir/ui/sectionTwoAndThree";
 import SectionTwo from "@/public/homeDir/ui/sectionTwo";
 import ServerName from "@/components/server-name";
 import SectionThree from "@/public/homeDir/ui/sectionThree";
-// import ChannelSidebar from "@/components/channel-sidebar";
 import UserProfileBarUi from "@/public/ui/UserProfileBarUi";
 import UserProfileBar from "@/public/components/UserProfileBar";
 import { ChannelHydrator } from "@/components/hydrate/channel-hydrator";
@@ -12,7 +11,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import ChannelSubscriber from "@/components/ChannelSubscriber";
 
-export default async function ServerRayout({
+export default async function ServerLayout({
   params,
   children,
 }: {
@@ -22,32 +21,31 @@ export default async function ServerRayout({
   const { serverId } = await params;
   const cookieStore = await cookies();
   const accessToken = await cookieStore.get("accessToken")?.value;
+
   console.log("accessToken", accessToken);
   if (!accessToken) {
-    // 로그인 안 돼 있으면 리디렉션 (선택)
     redirect("/login");
   }
+
+  // 채널 데이터 가져오기
   const channels = await fetch(`http://localhost:8080/server/${serverId}/channel`, {
     cache: "no-store",
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
   });
+
   console.log("[/channels/[serverId]/layout] fetch");
-  const channelss = await channels.json();
-  console.log("channelss = ", channelss);
-  const channelsData: channel[] = await channelss.response;
+  const channelsResponse = await channels.json();
+  console.log("channelsResponse = ", channelsResponse);
+  const channelsData: channel[] = await channelsResponse.response;
   console.log("channelsData = ", channelsData);
-  // const channelsData: channelList[] = [
-  //   { channelId: 1, channelName: "chatChannelEx1", type: "text", creatorId: 2 },
-  //   { channelId: 2, channelName: "chatChannelEx2", type: "text", creatorId: 3 },
-  //   { channelId: 3, channelName: "chatChannelEx3", type: "voice", creatorId: 4 },
-  // ];
 
   return (
-    <div className={"flex flex-1 bg-amber-200"}>
+    <div className={"flex flex-1 bg-amber-200 relative"}>
       <ChannelHydrator channels={channelsData} />
       <ChannelSubscriber serverId={serverId} token={accessToken} />
+
       <SectionTwoAndThree>
         <SectionTwo>
           <ServerName />
@@ -64,6 +62,8 @@ export default async function ServerRayout({
           />
         </UserProfileBarUi>
       </SectionTwoAndThree>
+
+      {/* 메인 컨텐츠 */}
       {children}
     </div>
   );

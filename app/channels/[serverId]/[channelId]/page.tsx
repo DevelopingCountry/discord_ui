@@ -176,7 +176,7 @@ export default function Home() {
         lastTime &&
         date.getTime() - lastTime.getTime() <= 60 * 1000;
 
-      if (isSameGroup) {
+      if (isSameGroup && currentGroup) {
         currentGroup.messages.push({
           messageId: msg.messageId,
           content: msg.content,
