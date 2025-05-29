@@ -68,6 +68,7 @@ export default function VoiceChannelItem({ channel, serverId, onChannelClick }: 
           channelId={channel.id}
           serverId={serverId}
           channelName={channel.name}
+          creatorId={channel.creatorId}
         />
       )}
     </>

@@ -61,6 +61,7 @@ export function TextChannelItem({ channel, serverId, onChannelClick }: TextChann
           channelId={channel.id}
           serverId={serverId}
           channelName={channel.name}
+          creatorId={channel.creatorId}
         />
       )}
     </>

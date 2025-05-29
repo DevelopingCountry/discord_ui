@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { Trash2, Edit } from "lucide-react";
+import { Trash2, Edit, Bell } from "lucide-react";
 
 import { DeleteChannelModal } from "@/components/modal/channel/delete-channel-modal";
 import { UpdateChannelModal } from "@/components/modal/channel/update-channel-modal";
+import { useAuth } from "@/components/context/AuthContext";
 
 interface ContextMenuProps {
   x: number;
@@ -13,12 +14,14 @@ interface ContextMenuProps {
   channelId: string;
   serverId: string;
   channelName: string;
+  creatorId: string;
 }
 
-export function ChannelContextMenu({ x, y, onClose, channelId, serverId, channelName }: ContextMenuProps) {
+export function ChannelContextMenu({ x, y, onClose, channelId, serverId, channelName, creatorId }: ContextMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false); // 추가
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false); // 추가
+  const { userId } = useAuth();
 
   // 화면 밖으로 나가지 않도록 위치 조정
   const [position, setPosition] = useState({ x, y });
@@ -130,23 +133,38 @@ export function ChannelContextMenu({ x, y, onClose, channelId, serverId, channel
       {/*  <span className="text-sm">채널 설정</span>*/}
       {/*</div>*/}
 
-      <div
-        className="flex items-center px-3 py-2 text-[#dcddde] hover:bg-[#4752c4] cursor-pointer"
-        onClick={handleOpenUpdateChannel}
-      >
-        <Edit className="w-4 h-4 mr-2" />
-        <span className="text-sm">이름 변경</span>
-      </div>
+      {creatorId === userId ? (
+        <>
+          <div
+            className="flex items-center px-3 py-2 text-[#dcddde] hover:bg-[#4752c4] cursor-pointer"
+            onClick={handleOpenUpdateChannel}
+          >
+            <Edit className="w-4 h-4 mr-2" />
+            <span className="text-sm">이름 변경</span>
+          </div>
 
-      <div className="border-t border-[#2f3136] my-1"></div>
+          <div className="border-t border-[#2f3136] my-1"></div>
 
-      <div
-        className="flex items-center px-3 py-2 text-[#ed4245] hover:bg-[#ed4245] hover:text-white cursor-pointer"
-        onClick={handleOpenDeleteModal}
-      >
-        <Trash2 className="w-4 h-4 mr-2" />
-        <span className="text-sm">채널 삭제</span>
-      </div>
+          <div
+            className="flex items-center px-3 py-2 text-[#ed4245] hover:bg-[#ed4245] hover:text-white cursor-pointer"
+            onClick={handleOpenDeleteModal}
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            <span className="text-sm">채널 삭제</span>
+          </div>
+          <div className="flex items-center px-3 py-2 text-[#dcddde] hover:bg-[#4752c4] cursor-pointer">
+            {/* 여기에 원하는 알림 설정 아이콘을 넣어도 됩니다 */}
+            <Bell className="w-4 h-4 mr-2" />
+            <span className="text-sm">알림 설정</span>
+          </div>
+        </>
+      ) : (
+        <div className="flex items-center px-3 py-2 text-[#dcddde] hover:bg-[#4752c4] cursor-pointer">
+          {/* 여기에 원하는 알림 설정 아이콘을 넣어도 됩니다 */}
+          <Bell className="w-4 h-4 mr-2" />
+          <span className="text-sm">알림 설정</span>
+        </div>
+      )}
       <DeleteChannelModal
         isOpen={isDeleteModalOpen}
         onClose={handleCloseDeleteModal}

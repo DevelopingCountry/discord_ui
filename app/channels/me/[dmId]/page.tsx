@@ -21,7 +21,13 @@ export default function Home() {
       {/*  </ul>*/}
       {/*</div>*/}
       {/*<DmChat dmId={dmId} />*/}
-      <DmChat2 dmId={dmId} />
+      <div className={"flex"}>
+        <DmChat2 dmId={dmId} />
+        <div className={"min-w-[358px] bg-discordDark hidden xl:block justify-center shadow-elevationLeft"}>
+          <div className={"h-full w-full flex justify-center items-center text-white"}>메모장</div>
+        </div>
+      </div>
+
       <div className={"absolute bottom-0 z-20 w-full bg-discord1and4"}>{/*<MessageInput />*/}</div>
       {/*<div className={"min-w-[358px] bg-amber-50 hidden xl:block justify-center"}>*/}
       {/*  <div className={"h-full w-full flex justify-center items-center"}>친구없음</div>*/}

@@ -26,7 +26,7 @@ const SearchFriend = () => {
         <ul>
           {filteredFriends?.map((friend, index) => (
             <li key={index}>
-              <ChatMessage name={friend.name} status={"행인1"} id={friend.friendId} />
+              <ChatMessage name={friend.name} status={"행인1"} id={friend.friendId} isActive={isActive} />
             </li>
           ))}
           {/*{friends.map((friend, index) => (*/}
