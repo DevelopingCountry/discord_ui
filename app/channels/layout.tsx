@@ -10,6 +10,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { MyProfileHydrator } from "@/components/hydrate/my-profile-hydrator";
 import NotificationSubscribe from "@/lib/NotificationSubscribe";
+import NotificationPermissionBanner from "@/lib/NotificationPermissionBanner";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -68,6 +69,7 @@ export default async function ChannelsLayout({
     <>
       <ServerHydrator servers={servers} />
       <MyProfileHydrator myProfile={profile} />
+      <NotificationPermissionBanner />
       <NotificationSubscribe myProfile={profile} />
       {/*<EnsureServersClient />*/}
       <div className="bg-discordSidebar w-screen h-screen flex overflow-x-hidden overflow-y-hidden">

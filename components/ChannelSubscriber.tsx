@@ -5,6 +5,7 @@ import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { useChannelStore } from "@/components/store/use-channel-store";
 import { channel } from "@/components/type/response";
+import { usePathname, useRouter } from "next/navigation";
 
 interface ChannelSubscriberProps {
   serverId: string;
@@ -17,6 +18,8 @@ export default function ChannelSubscriber({ serverId, token }: ChannelSubscriber
   // const channels = useChannelStore((state) => state.channels);
   const channels = useChannelStore((state) => state.channels);
   const setChannels = useChannelStore((state) => state.setChannels);
+  const route = useRouter();
+  const pathname = usePathname();
   // useEffect(() => {
   //   setChannels(channels);
   // }, [channels, setChannels]);
@@ -63,6 +66,22 @@ export default function ChannelSubscriber({ serverId, token }: ChannelSubscriber
           );
           console.log("update된 채널들", updatedChannels);
           setChannels(updatedChannels); // 상태 업데이트
+        }
+        if (action === "delete") {
+          console.log("delete 전 channel", channels);
+          console.log("총 채널 수:", channels.length);
+          console.log("delete 합니다");
+
+          const updatedChannels = channels.filter((channel) => channel.id !== data.id);
+
+          console.log("delete 후 채널들", updatedChannels);
+          setChannels(updatedChannels); // 상태 업데이트
+          const currentChannelId = pathname.split("/")[4];
+          console.log("현재 채널 ID:", currentChannelId);
+          if (filteredData.id === currentChannelId) {
+            route.push(`/channels/${serverId}`);
+            console.log("이 채널은 삭제되었어요.");
+          }
         }
       });
     });
