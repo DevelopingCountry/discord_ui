@@ -39,7 +39,6 @@ export default function DirectMessage({ dm }: { dm: DmList }) {
       }}
     >
       <div className="relative mr-3">
-        {/*<Image src={image || "/assets/discord_blue.png"} alt={name} width={40} height={40} className="rounded-full" />*/}
         <Image src={"/assets/discord_blue.png"} alt={"a"} width={40} height={40} className="rounded-full" />
       </div>
       <div className="flex-1 flex justify-between">

@@ -15,7 +15,6 @@ export function TabBarComp() {
   const TabItems: { id: number; label: string }[] = [
     { id: 1, label: "모두" },
     { id: 2, label: "대기중" },
-    // 나중에 거절도 넣자
   ];
   const addFriendHandler = () => {
     console.log("click");
@@ -27,10 +26,10 @@ export function TabBarComp() {
     }
   };
   return (
-    <div className={"flex items-center relative flex-1"}>
-      <Image src={"/assets/friend.png"} alt={"친구"} width={24} height={24} />
-      {/*<RxDividerVertical size={25} color={"gray"} />*/}
-      <ul className={"flex"}>
+    <div className={"flex py-3 items-center relative flex-1"}>
+      <Image src="/assets/friend_tap.png" alt="친구" width={40} height={35} />
+      <p className="text-lg font-bold text-white mr-3">친구</p>
+      <ul className={"flex font-semibold"}>
         {TabItems.map((item) => (
           <li key={item.id}>
             <TabItem
@@ -38,7 +37,6 @@ export function TabBarComp() {
               isSelected={selectedTabId === item.id}
               onClick={() => {
                 if (setState) {
-                  console.log("item.label", item.label);
                   setState("getFriends");
                 }
                 setSelectedTabId(item.id);
@@ -48,15 +46,11 @@ export function TabBarComp() {
           </li>
         ))}
         <li>
-          <Button className="bg-[#5865f2] hover:bg-[#4752c4] text-white" onClick={addFriendHandler}>
+          <Button className="bg-[#5865f2] hover:bg-[#4752c4]font-semibold text-white ml-2" onClick={addFriendHandler}>
             친구 추가하기
           </Button>
         </li>
       </ul>
-
-      {/*<TabItem label={"추천"} isActive={false} />*/}
-      {/*<TabItem label={"차단 목록"} isActive={false} />*/}
-      {/*<TabItem label={"친구 추가하기"} />*/}
     </div>
   );
 }

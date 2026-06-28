@@ -9,6 +9,8 @@ import SectionFour from "@/public/homeDir/ui/sectionFour";
 import Image from "next/image";
 import { useAuth } from "@/components/context/AuthContext";
 import { API_URL } from "@/lib/config";
+import { useDmStore } from "@/components/store/use-dm-store";
+import { useRouter } from "next/navigation";
 
 type Message = {
   messageId: string;
@@ -25,7 +27,6 @@ type MessageGroup = {
   avatarUrl?: string;
   timeLabel: string;
   messages: { messageId: string; content: string; createdAt: string }[];
-  lastTime: Date;
 };
 
 type GroupedDay = {
@@ -40,14 +41,20 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
   const { userId } = useAuth();
+  const router = useRouter();
+  const dmList = useDmStore((s) => s.dmList);
+  const removeDm = useDmStore((s) => s.removeDm);
+
+  const currentDm = dmList.find((d) => d.dmId === dmId);
+  const partnerName = currentDm?.targetNickname ?? "";
+  const partnerAvatar = currentDm?.targetImageUrl || "/assets/discord_blue.png";
+  const targetId = currentDm?.targetId ?? "";
 
   useEffect(() => {
     if (!token || !dmId) return;
 
     axios
-      .get(`${API_URL}/dm/${dmId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(`${API_URL}/dm/${dmId}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => setMessages(res.data.response || []))
       .catch((err) => console.error("❌ 메시지 불러오기 실패:", err));
 
@@ -58,7 +65,6 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
       onConnect: () => {
         stomp.subscribe(`/topic/dm/${dmId}`, (msg) => {
           const data = JSON.parse(msg.body);
-          console.log(data);
           if (data.type === "SEND") {
             setMessages((prev) => [...prev, data.message]);
           } else if (data.type === "UPDATE") {
@@ -73,7 +79,6 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
       },
     });
     stomp.activate();
-
     return () => {
       stomp.deactivate();
     };
@@ -81,57 +86,58 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
 
   const sendMessage = (content: string) => {
     if (!client || !content.trim()) return;
-    client.publish({
-      destination: `/app/dm/${dmId}`,
-      body: JSON.stringify({ content }),
-    });
+    client.publish({ destination: `/app/dm/${dmId}`, body: JSON.stringify({ content }) });
   };
 
   const updateMessage = async (messageId: string, content: string) => {
-    if (!client || !content.trim()) {
-      console.log("메시지가 빔");
-      alert("✅ 메시지를 작성해주세요");
-      return;
-    }
-
+    if (!content.trim()) return;
     try {
       await axios.patch(
         `${API_URL}/dm/${dmId}/message/${messageId}`,
         { content },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        },
+        { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } },
       );
-      alert("✅ 메시지 수정 완료");
       setMessages((prev) => prev.map((msg) => (msg.messageId === messageId ? { ...msg, content } : msg)));
       setEditingMessage(null);
     } catch (err) {
       console.error("❌ 메시지 수정 실패:", err);
-      alert("❌ 수정 실패");
     }
   };
+
   const deleteMessage = async (messageId: string) => {
     try {
       await axios.delete(`${API_URL}/dm/${dmId}/message/${messageId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      alert("✅ 메시지 삭제 완료");
       setMessages((prev) => prev.filter((msg) => msg.messageId !== messageId));
     } catch (err) {
       console.error("❌ 메시지 삭제 실패:", err);
-      alert("❌ 삭제 실패");
     }
   };
-  const groupMessages = (messages: Message[]): GroupedDay[] => {
+
+  const deleteFriend = async () => {
+    if (!targetId) return;
+    const confirmed = confirm(`${partnerName}님을 친구 목록에서 삭제하시겠습니까?`);
+    if (!confirmed) return;
+    try {
+      await axios.delete(`${API_URL}/friend`, {
+        headers: { Authorization: `Bearer ${token}` },
+        data: { userId: targetId },
+      });
+      removeDm(dmId ?? "");
+      router.push("/channels/me");
+    } catch (err) {
+      console.error("❌ 친구 삭제 실패:", err);
+    }
+  };
+
+  const groupMessages = (msgs: Message[]): GroupedDay[] => {
     const grouped: GroupedDay[] = [];
-    let currentDate = "";
+    let currentDateKey = "";
     let currentGroup: MessageGroup | null = null;
     let currentDay: GroupedDay | null = null;
 
-    messages.forEach((msg) => {
+    msgs.forEach((msg) => {
       const date = new Date(msg.createdAt);
       const dateKey = date.toDateString();
       const timeLabel = new Intl.DateTimeFormat("ko-KR", {
@@ -140,8 +146,8 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
         hour12: true,
       }).format(date);
 
-      if (dateKey !== currentDate) {
-        currentDate = dateKey;
+      if (dateKey !== currentDateKey) {
+        currentDateKey = dateKey;
         currentDay = {
           dateLabel: new Intl.DateTimeFormat("ko-KR", {
             year: "numeric",
@@ -154,8 +160,8 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
         currentGroup = null;
       }
 
-      const lastMessage = currentGroup?.messages.at(-1);
-      const lastTime = lastMessage ? new Date(lastMessage.createdAt) : null;
+      const lastMsg = currentGroup?.messages.at(-1);
+      const lastTime = lastMsg ? new Date(lastMsg.createdAt) : null;
       const isSameGroup =
         currentGroup &&
         currentGroup.userId === msg.userId &&
@@ -163,25 +169,14 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
         date.getTime() - lastTime.getTime() <= 60 * 1000;
 
       if (isSameGroup) {
-        currentGroup.messages.push({
-          messageId: msg.messageId,
-          content: msg.content,
-          createdAt: msg.createdAt,
-        });
+        currentGroup!.messages.push({ messageId: msg.messageId, content: msg.content, createdAt: msg.createdAt });
       } else {
         currentGroup = {
           userId: msg.userId,
           nickName: msg.nickName,
           avatarUrl: msg.avatarUrl,
           timeLabel,
-          lastTime: date,
-          messages: [
-            {
-              messageId: msg.messageId,
-              content: msg.content,
-              createdAt: msg.createdAt,
-            },
-          ],
+          messages: [{ messageId: msg.messageId, content: msg.content, createdAt: msg.createdAt }],
         };
         currentDay?.messageGroups.push(currentGroup);
       }
@@ -190,90 +185,117 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
     return grouped;
   };
 
-  let groupedMessages = groupMessages(messages);
+  const groupedMessages = groupMessages(messages);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    groupedMessages = groupMessages(messages);
   }, [messages]);
 
   return (
     <SectionFour>
-      <div ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar relative px-4 py-6 w-full pb-[90px]">
-        {groupedMessages.map((group, groupIdx) => (
-          <div key={groupIdx}>
-            <div className="text-center text-gray-400 text-sm my-6 w-full">{group.dateLabel}</div>
-            {group.messageGroups.map((g, i) => {
-              const isMine = g.userId === userId;
-              return (
-                <div key={i} className={`flex w-full ${isMine ? "justify-end" : "justify-start"} mb-4`}>
+      <div ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-[90px]">
+        {/* DM 상단 헤더 */}
+        <div className="pt-16 pb-6 border-b border-[#3f4147] mb-4">
+          <Image src={partnerAvatar} alt={partnerName} width={80} height={80} className="rounded-full mb-4" />
+          <h2 className="text-3xl font-bold text-white mb-1">{partnerName}</h2>
+          <p className="text-[#b5bac1] text-sm mb-3">{partnerName}</p>
+          <p className="text-[#b5bac1] mb-4">{partnerName}님과 나눈 다이렉트 메시지의 첫 부분이에요.</p>
+          <button
+            onClick={deleteFriend}
+            className="px-3 py-1.5 text-sm bg-[#2b2d31] hover:bg-[#36373d] text-white rounded border border-[#3f4147] transition-colors"
+          >
+            친구 삭제하기
+          </button>
+        </div>
+
+        {/* 날짜별 메시지 */}
+        {groupedMessages.map((day, dayIdx) => (
+          <div key={dayIdx}>
+            {/* 날짜 구분선 */}
+            <div className="flex items-center gap-3 my-5">
+              <div className="flex-1 h-px bg-[#3f4147]" />
+              <span className="text-xs text-[#949ba4] font-medium whitespace-nowrap">{day.dateLabel}</span>
+              <div className="flex-1 h-px bg-[#3f4147]" />
+            </div>
+
+            {day.messageGroups.map((group, groupIdx) => (
+              <div key={groupIdx} className="flex gap-4 mb-1 group hover:bg-[#2e3035] rounded px-2 py-0.5 -mx-2">
+                {/* 아바타 */}
+                <div className="flex-shrink-0 mt-0.5">
                   <Image
-                    src={g.avatarUrl || "/assets/discord_blue.png"}
-                    alt="avatar"
-                    width={32}
-                    height={32}
-                    className="w-8 h-8 rounded-full mr-2 mt-1"
+                    src={group.avatarUrl || "/assets/discord_blue.png"}
+                    alt={group.nickName}
+                    width={40}
+                    height={40}
+                    className="rounded-full"
                   />
-                  <div className="w-full">
-                    <div className="flex items-center">
-                      <div className="text-sm text-gray-300 font-bold mb-1 mt-2">{g.nickName}</div>
-                      <div className="text-xs text-gray-400 mt-1 ml-2">{g.timeLabel}</div>
-                    </div>
-                    {g.messages.map((msg) => (
-                      <div key={msg.messageId} className="w-full my-[2px] flex group relative">
-                        {editingMessage?.messageId === msg.messageId ? (
-                          <div className="w-full flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={editingMessage.content}
-                              onChange={(e) => setEditingMessage({ ...editingMessage, content: e.target.value })}
-                              className="flex-1 p-2 rounded bg-[#2f3136] text-white"
-                              autoFocus
-                            />
-                            <button
-                              onClick={() => updateMessage(editingMessage.messageId, editingMessage.content)}
-                              className="px-3 py-1 bg-[#5865f2] text-white rounded hover:bg-[#4752c4]"
-                            >
-                              수정
-                            </button>
-                            <button
-                              onClick={() => setEditingMessage(null)}
-                              className="px-3 py-1 bg-[#2f3136] text-white rounded hover:bg-[#202225]"
-                            >
-                              취소
-                            </button>
-                          </div>
-                        ) : (
-                          <div
-                            className={`p-3 rounded-lg break-words w-full ${isMine ? "bg-[#5865f2] text-white ml-auto" : "bg-[#5865f2] text-white"}`}
-                          >
-                            {msg.content}
-                          </div>
-                        )}
-                        {isMine && !editingMessage && (
-                          <div className="absolute top-1/2 -translate-y-1/2 right-2 flex gap-2 group-hover:flex hidden cursor-pointer">
-                            <span onClick={() => setEditingMessage({ messageId: msg.messageId, content: msg.content })}>
-                              ✏️
-                            </span>
-                            <span
-                              onClick={() => {
-                                const confirmed = confirm("정말 이 메시지를 삭제하시겠습니까?");
-                                if (confirmed) deleteMessage(msg.messageId);
-                              }}
-                            >
-                              🗑️
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
                 </div>
-              );
-            })}
+
+                {/* 메시지 내용 */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="font-semibold text-white text-sm">{group.nickName}</span>
+                    <span className="text-xs text-[#949ba4]">{group.timeLabel}</span>
+                  </div>
+                  {group.messages.map((msg) => (
+                    <div key={msg.messageId} className="relative group/msg">
+                      {editingMessage?.messageId === msg.messageId ? (
+                        <div className="flex items-center gap-2 mt-1">
+                          <input
+                            type="text"
+                            value={editingMessage.content}
+                            onChange={(e) => setEditingMessage({ ...editingMessage, content: e.target.value })}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" && !e.nativeEvent.isComposing)
+                                updateMessage(editingMessage.messageId, editingMessage.content);
+                              if (e.key === "Escape") setEditingMessage(null);
+                            }}
+                            className="flex-1 p-1.5 rounded bg-[#383a40] text-white text-sm border border-[#5865f2] outline-none"
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => updateMessage(editingMessage.messageId, editingMessage.content)}
+                            className="text-xs px-2 py-1 bg-[#5865f2] text-white rounded hover:bg-[#4752c4]"
+                          >
+                            저장
+                          </button>
+                          <button
+                            onClick={() => setEditingMessage(null)}
+                            className="text-xs px-2 py-1 bg-[#2b2d31] text-[#b5bac1] rounded hover:bg-[#36373d]"
+                          >
+                            취소
+                          </button>
+                        </div>
+                      ) : (
+                        <p className="text-[#dcddde] text-sm leading-relaxed break-words">{msg.content}</p>
+                      )}
+                      {group.userId === userId && !editingMessage && (
+                        <div className="absolute top-0 right-0 hidden group-hover/msg:flex gap-1 bg-[#2b2d31] border border-[#3f4147] rounded px-1 shadow">
+                          <button
+                            onClick={() => setEditingMessage({ messageId: msg.messageId, content: msg.content })}
+                            className="text-[#b5bac1] hover:text-white text-xs px-1.5 py-0.5"
+                          >
+                            ✏️
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (confirm("이 메시지를 삭제하시겠습니까?")) deleteMessage(msg.messageId);
+                            }}
+                            className="text-[#b5bac1] hover:text-red-400 text-xs px-1.5 py-0.5"
+                          >
+                            🗑️
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         ))}
       </div>
+
       <div className="absolute bottom-0 z-20 w-full bg-discord1and4">
         <MessageInput onSend={sendMessage} />
       </div>

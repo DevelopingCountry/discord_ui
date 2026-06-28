@@ -30,7 +30,7 @@ export default function MessageInput({ onSend }: { onSend: (message: string) => 
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Message your friend..."
           onKeyDown={(e) => e.key === "Enter" && !e.nativeEvent.isComposing && handleSend()}
-          className="pl-12 pr-32 py-3 bg-[#383a40] border-none text-[#dcddde] placeholder:text-[#96989d] rounded-lg focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="pl-12 pr-32 py-8 bg-[#383a40] border-none text-[#dcddde] placeholder:text-[#96989d] rounded-lg focus-visible:ring-0 focus-visible:ring-offset-0"
         />
 
         <div className="absolute right-4 top-1/2 transform -translate-y-1/2 flex items-center gap-2 text-[#b5bac1]">

@@ -15,7 +15,6 @@ export default function Home() {
     <>
       <SectionOne>
         <TabBarComp />
-        {/*<ToolBar />*/}
       </SectionOne>
       <SectionFour>
         <div className={"flex"}>

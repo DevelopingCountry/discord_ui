@@ -76,10 +76,10 @@ export default function ChatMessage({
   };
 
   return (
-    <div className="flex items-center px-2 py-3 rounded hover:bg-[#35373c] cursor-pointer group">
+    <div className="flex items-center px-10 py-4 rounded hover:bg-[#35373c] cursor-pointer group">
       {/* 아바타 */}
-      <div className="relative mr-3 flex-shrink-0">
-        <Image src={avatar || "/assets/discord_blue.png"} alt={name} width={40} height={40} className="rounded-full" />
+      <div className="relative mr-4 flex-shrink-0">
+        <Image src={avatar || "/assets/discord_blue.png"} alt={name} width={42} height={42} className="rounded-full" />
         {isOnline && (
           <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-[#313338]" />
         )}
@@ -87,7 +87,7 @@ export default function ChatMessage({
 
       {/* 이름 */}
       <div className="flex-1 min-w-0">
-        <div className="text-white text-sm font-medium truncate">{name}</div>
+        <div className="text-white text-md font-medium truncate">{name}</div>
         <div className="text-[#b5bac1] text-xs">
           {status === "ACCEPTED" ? "온라인" : isSender ? "요청 보냄" : "요청 받음"}
         </div>
