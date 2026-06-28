@@ -14,6 +14,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { MainScreenProvider } from "@/components/context/main-screen-context";
 import { API_URL } from "@/lib/config";
+import { ProfileHydrator } from "@/components/profile-hydrator";
 
 export const metadata: Metadata = {
   title: "discord ui",
@@ -53,29 +54,25 @@ export default async function MeLayout({
   const friend = await friendResponseJson.response;
   console.log("friend =", friend);
   return (
-    <div className={"flex flex-1"}>
-      <SectionTwoAndThree>
-        <SectionTwo>
-          <SectionTwoMain />
-        </SectionTwo>
-        <SectionThree>
-          <DmHydrator dmList={dmList} />
-          <SectionThreeMain />
-        </SectionThree>
-        <UserProfileBarUi>
-          <UserProfileBar
-            imageUrl="/assets/discord_blue.png"
-            stateIcon="/assets/status-online.svg"
-            username="이원빈"
-            statusMessage="온라인"
-          />
-        </UserProfileBarUi>
-      </SectionTwoAndThree>
-      <SectionOneAndFour>
-        <FriendsProvider friendsData={friend}>
+    <FriendsProvider friendsData={friend}>
+      <div className={"flex flex-1"}>
+        <SectionTwoAndThree>
+          <SectionTwo>
+            <SectionTwoMain />
+          </SectionTwo>
+          <SectionThree>
+            <DmHydrator dmList={dmList} />
+            <ProfileHydrator />
+            <SectionThreeMain />
+          </SectionThree>
+          <UserProfileBarUi>
+            <UserProfileBar stateIcon="/assets/status-online.svg" statusMessage="온라인" />
+          </UserProfileBarUi>
+        </SectionTwoAndThree>
+        <SectionOneAndFour>
           <MainScreenProvider>{children}</MainScreenProvider>
-        </FriendsProvider>
-      </SectionOneAndFour>
-    </div>
+        </SectionOneAndFour>
+      </div>
+    </FriendsProvider>
   );
 }

@@ -114,7 +114,7 @@ export default function ChatMessage({
         {isActive === "대기중" && isSender && (
           // 내가 보낸 요청 → 취소 버튼만
           <button
-            onClick={rejectFriend}
+            onClick={deleteFriend}
             title="요청 취소"
             className="w-9 h-9 rounded-full bg-[#2b2d31] flex items-center justify-center hover:bg-red-500/20"
           >
@@ -122,7 +122,6 @@ export default function ChatMessage({
           </button>
         )}
         {isActive === "대기중" && !isSender && (
-          // 내가 받은 요청 → 수락 + 거절
           <>
             <button
               onClick={acceptFriend}
