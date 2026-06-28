@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 const KAKAO_CLIENT_ID = "d0e33acc669d3d7994242e6879cefb32";
 const REDIRECT_URI = "http://localhost:3000/auth/kakao";
@@ -24,10 +25,12 @@ export default function LoginPage() {
 
       {/* Nav */}
       <nav className="relative z-10 flex items-center px-10 py-5">
-        <div className="flex items-center gap-2">
-          <Image src="/assets/discord_logo2.png" alt="Harmonica" width={32} height={32} />
-          <span className="text-white text-xl font-extrabold tracking-tight">Harmonica</span>
-        </div>
+        <Link href="/" className="flex items-center gap-2">
+          <div className="flex items-center gap-2">
+            <Image src="/assets/discord_logo2.png" alt="Harmonica" width={32} height={32} />
+            <span className="text-white text-xl font-extrabold tracking-tight">Harmonica</span>
+          </div>
+        </Link>
       </nav>
 
       {/* Content */}
