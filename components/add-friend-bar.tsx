@@ -4,6 +4,7 @@ import axios from "axios";
 import { friendsDataType } from "@/components/type/response";
 import { useAuth } from "@/components/context/AuthContext";
 import { useFriendsContext } from "@/components/context/friends-context";
+import { API_URL } from "@/lib/config";
 
 export default function AddFriendBar({
   name,
@@ -20,15 +21,16 @@ export default function AddFriendBar({
   isOnline?: boolean;
   isPlaying?: boolean;
 }) {
-  const friendsData = useFriendsContext()?.friendsData;
-  const setFriendsData = useFriendsContext()?.setFriendsData;
+  const friendsContext = useFriendsContext();
+  const friendsData = friendsContext?.friendsData;
+  const setFriendsData = friendsContext?.setFriendsData;
   const { accessToken } = useAuth();
   const body = {
     targetId: id,
   };
   const clickHandle = () => {
     axios
-      .post("http://localhost:8080/friend", body, {
+      .post(`${API_URL}/friend`, body, {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
       .then((res) => {
@@ -40,6 +42,11 @@ export default function AddFriendBar({
         console.log("friendsData", friendsData);
         // Zustand store의 addDm 함수 호출
         console.log("user정보 가져오기 완료");
+        if (!setFriendsData) {
+          console.error("Friends update function is not available");
+          return;
+        }
+
         if (!friendsData) {
           setFriendsData([newFriend]);
         } else {
