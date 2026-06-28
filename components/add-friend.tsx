@@ -9,6 +9,7 @@ import { useFriendsContext } from "@/components/context/friends-context";
 import { useAuth } from "@/components/context/AuthContext";
 import { friendsDataType } from "@/components/type/response";
 import AddFriendBar from "@/components/add-friend-bar";
+import { API_URL } from "@/lib/config";
 export default function AddFriend() {
   const [username, setUsername] = useState("");
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
@@ -17,23 +18,20 @@ export default function AddFriend() {
   const friendsData = useFriendsContext()?.friendsData;
   const clickHandler = () => {
     console.log("username ", username);
-    //1. 서버에 post요청
     const body = {
-      nickName: username, // 서버가 기대하는 필드명으로 수정
+      nickName: username,
     };
     console.log("Sending request body:", { nickName: username });
     console.log("Access Token:", accessToken);
     axios
-      .post("http://localhost:8080/friend/search", body, {
+      .post(`${API_URL}/friend/search`, body, {
         headers: { Authorization: `Bearer ${accessToken}` },
       })
       .then((res) => {
         console.log("hhi");
-        //2. response값으로 어떤 유저의 정보를 보내줌
         const newFriend: friendsDataType = res.data.response;
         console.log("newFriend", newFriend);
         console.log("friendsData", friendsData);
-        // Zustand store의 addDm 함수 호출
         console.log("user정보 가져오기 완료");
         setSearchedUser(newFriend);
       })
@@ -42,18 +40,9 @@ export default function AddFriend() {
         console.error("❌user정보 가져오기 실패:", err);
         console.error("Server Error:", err.response?.data);
       });
-    //3. 그 유저의 정보를 여기 밑에 띄움
-    //4. 그 유저에게 검
   };
 
   return (
-    // <div className={"flex-1 people-column"}>
-    //   aa
-    //   <header>
-    //     <h2>친구 추가하기</h2>
-    //   </header>
-    //
-    // </div>
     <div className="flex-1 p-4 md:p-8">
       <header className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
         <div>

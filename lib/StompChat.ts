@@ -1,6 +1,7 @@
 // lib/stomp.ts
 import SockJS from "sockjs-client";
 import { Client, IMessage } from "@stomp/stompjs";
+import { API_URL } from "@/lib/config";
 type messages = {
   dmId: string;
   messageId: string;
@@ -15,7 +16,7 @@ let stompClient: Client | null = null;
 type MessageHandler = (type: string, message: messages) => void;
 
 export function connectStomp(token: string, dmId: string, onMessage: MessageHandler) {
-  const socket = new SockJS(`http://localhost:8080/ws-chat?token=${token}`);
+  const socket = new SockJS(`${API_URL}/ws-chat?token=${token}`);
 
   stompClient = new Client({
     webSocketFactory: () => socket,

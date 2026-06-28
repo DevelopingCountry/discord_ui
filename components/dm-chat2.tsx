@@ -8,6 +8,7 @@ import MessageInput from "@/components/messeage-input";
 import SectionFour from "@/public/homeDir/ui/sectionFour";
 import Image from "next/image";
 import { useAuth } from "@/components/context/AuthContext";
+import { API_URL } from "@/lib/config";
 
 type Message = {
   messageId: string;
@@ -44,13 +45,13 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
     if (!token || !dmId) return;
 
     axios
-      .get(`http://localhost:8080/dm/${dmId}`, {
+      .get(`${API_URL}/dm/${dmId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => setMessages(res.data.response || []))
       .catch((err) => console.error("❌ 메시지 불러오기 실패:", err));
 
-    const socket = new SockJS(`http://localhost:8080/ws-chat?token=${token}`);
+    const socket = new SockJS(`${API_URL}/ws-chat?token=${token}`);
     const stomp = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
@@ -95,7 +96,7 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
 
     try {
       await axios.patch(
-        `http://localhost:8080/dm/${dmId}/message/${messageId}`,
+        `${API_URL}/dm/${dmId}/message/${messageId}`,
         { content },
         {
           headers: {
@@ -114,7 +115,7 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
   };
   const deleteMessage = async (messageId: string) => {
     try {
-      await axios.delete(`http://localhost:8080/dm/${dmId}/message/${messageId}`, {
+      await axios.delete(`${API_URL}/dm/${dmId}/message/${messageId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("✅ 메시지 삭제 완료");

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ChannelContextMenu } from "@/components/ui/channel-context-menu";
 import { clsx } from "clsx";
 import { useVoiceStore } from "@/components/store/voiceStore";
+import { useAuth } from "@/components/context/AuthContext";
 
 export default function VoiceChannelItem({
   name,
@@ -24,12 +25,12 @@ export default function VoiceChannelItem({
     addParticipant,
     channelParticipants,
   } = useVoiceStore();
+  const { userId } = useAuth();
   const participants = channelParticipants[channelId] || [];
 
-  // 컨텍스트 메뉴 핸들러
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // 클릭 이벤트가 상위로 전파되지 않도록 함
+    e.stopPropagation();
     setContextMenu({ x: e.clientX, y: e.clientY });
   };
 
@@ -40,30 +41,20 @@ export default function VoiceChannelItem({
   return (
     <>
       <ul
-        // className={clsx(
-        //   "flex items-center gap-1.5 px-2 py-1 rounded text-sm cursor-pointer",
-        //   isAcitve ? "text-white bg-[#35373c]" : "text-[#96989d] hover:text-white hover:bg-[#35373c]",
-        // )}
         className={clsx(
           "flex items-center gap-1.5 px-2 py-1 rounded text-sm cursor-pointer text-[#96989d] hover:text-white hover:bg-[#35373c]",
         )}
         onContextMenu={handleContextMenu}
         onClick={() => {
-          // 현 유저가 안들어와있을 때
-          // 이 유저가 이 채널에 접속해 있다는것을 저장해야한다.
-          // 들어와 있을 떄
-          // 이 유저를 지운다.
+          if (!userId) return;
           const isAlreadyJoined = connectedChannelId === channelId;
-          const userId = "현재유저ID"; // 실제 로그인된 유저 ID를 여기에 세팅
 
           if (isAlreadyJoined) {
-            // 참여 중이니까 나가기
             removeParticipant(channelId, userId);
-            disconnectFromVoice(); // connectedChannelId 초기화
+            disconnectFromVoice();
           } else {
-            // 참여 중이 아니니까 들어가기
             addParticipant(channelId, userId);
-            connectToVoice(channelId); // 마지막 접속 채널 저장
+            connectToVoice(channelId);
           }
 
           console.log("channelId:", channelId);

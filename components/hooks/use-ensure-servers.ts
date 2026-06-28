@@ -3,6 +3,7 @@
 
 import { useEffect } from "react";
 import { useServerStore } from "@/components/store/use-server-store";
+import { API_URL } from "@/lib/config";
 
 export const useEnsureServers = () => {
   const { isFetched, setServers } = useServerStore();
@@ -10,7 +11,7 @@ export const useEnsureServers = () => {
   useEffect(() => {
     console.log("Fetching servers...");
     if (!isFetched) {
-      fetch("http://localhost:8080/server")
+      fetch(`${API_URL}/server`)
         .then((res) => res.json())
         .then((data) => {
           if (Array.isArray(data.response)) {
