@@ -32,8 +32,8 @@ export default function OnlineFriendsPanel() {
     <div className="min-w-[358px] bg-discordDark hidden xl:flex flex-col shadow-elevationLeft">
       <h2 className="text-white text-xl font-extrabold px-5 pt-6 pb-3">현재 활동 중</h2>
       {onlineFriends.length === 0 ? (
-        <div className="flex flex-col items-center justify-center flex-1 text-center px-6 pb-4 mt-24">
-          <div className="text-[#96989d] text-base font-semibold mb-2">지금은 조용하네요...</div>
+        <div className="flex flex-col items-center text-center px-6 pt-8">
+          <div className="text-[#96989d] text-base font-bold mb-2">지금은 조용하네요...</div>
           <div className="text-[#72767d] text-sm">친구가 온라인 상태가 되면 여기에 표시돼요!</div>
         </div>
       ) : (

@@ -9,8 +9,11 @@ export default function Home() {
   const dmId = Array.isArray(params?.dmId) ? params.dmId[0] : params?.dmId;
 
   return (
-    <div className={"flex"}>
-      <DmChat2 dmId={dmId} />
+    <div className={"flex h-full w-full"}>
+      <div className="flex-1 min-w-0">
+        <DmChat2 dmId={dmId} />
+      </div>
+
       <OnlineFriendsPanel />
     </div>
   );
