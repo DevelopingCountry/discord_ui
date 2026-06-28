@@ -3,12 +3,13 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/components/context/AuthContext";
+import { API_URL } from "@/lib/config";
 
 export const useUpdateServerInfo = () => {
   const { accessToken } = useAuth();
   return useMutation({
     mutationFn: async (data: { serverName: string; imageUrl?: string | null; serverId: string }) => {
-      const res = await fetch(`http://localhost:8080/server/${data.serverId}`, {
+      const res = await fetch(`${API_URL}/server/${data.serverId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
         body: JSON.stringify(data),

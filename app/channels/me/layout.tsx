@@ -14,11 +14,7 @@ import { DmHydrator } from "@/components/hydrate/dm-hydrator";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { MainScreenProvider } from "@/components/context/main-screen-context";
-
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
+import { API_URL } from "@/lib/config";
 
 export const metadata: Metadata = {
   title: "discord ui",
@@ -30,33 +26,13 @@ export default async function MeLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // const friendsDatas = await fetch("http://localhost:8080/friends");
-  // const friendsDatasjson: { name: string,imageUrl : string }[] = await friendsDatas.json();
-  // const friendsDatasjson: friendsDataType[] = [
-  //   { friendId: "1", name: "김성준", imageUrl: "image1", status: "PENDING" },
-  //   { friendId: "2", name: "이원빈", imageUrl: "image2", status: "REJECTED" },
-  //   { friendId: "3", name: "이소연", imageUrl: "image3", status: "ACCEPTED" },
-  //   { friendId: "4", name: "이소연", imageUrl: "image4", status: "REJECTED" },
-  //   { friendId: "5", name: "adb", imageUrl: "adb", status: "PENDING" },
-  //   { friendId: "6", name: "QRSN", imageUrl: "QRSN", status: "ACCEPTED" },
-  // ];
-
-  // const dmDatas = await fetch("http://localhost:8080/channels/dm");
-  // const dmDatasJson: { id:number, oppenentName: string }[] = dmDatas.json();
-  // const dmDatasJson: DmList[] = [
-  //   { dmId: 1, targetId: "1", targetImageUrl: "abab", targetNickName: "이소연" },
-  //   { dmId: 2, targetId: "2", targetImageUrl: "abab", targetNickName: "김성준" },
-  //   { dmId: 3, targetId: "3", targetImageUrl: "abab", targetNickName: "이원빈" },
-  //   { dmId: 4, targetId: "4", targetImageUrl: "abab", targetNickName: "김성준" },
-  // ];
   const cookieStore = await cookies();
   const accessToken = await cookieStore.get("accessToken")?.value;
   console.log("accessToken", accessToken);
   if (!accessToken) {
-    // 로그인 안 돼 있으면 리디렉션 (선택)
     redirect("/login");
   }
-  const dms = await fetch("http://localhost:8080/dm", {
+  const dms = await fetch(`${API_URL}/dm`, {
     cache: "no-store",
     headers: {
       Authorization: `Bearer ${accessToken}`,
@@ -67,7 +43,7 @@ export default async function MeLayout({
   const dmList: DmList[] = await dm.response;
   console.log(dmList);
 
-  const friendResponse = await fetch("http://localhost:8080/friend", {
+  const friendResponse = await fetch(`${API_URL}/friend`, {
     cache: "no-store",
     headers: {
       Authorization: `Bearer ${accessToken}`,

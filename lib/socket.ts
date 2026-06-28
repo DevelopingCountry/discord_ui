@@ -1,3 +1,4 @@
+import { WS_URL } from "@/lib/config";
 let socket: WebSocket | null = null;
 let onMessageCallback: ((msg: messages) => void) | null = null;
 type messages = {
@@ -10,7 +11,7 @@ type messages = {
   createdAt: string;
 };
 export function connectWebSocket(onMessage: (msg: messages) => void) {
-  socket = new WebSocket(`ws://localhost:8080/ws`);
+  socket = new WebSocket(`${WS_URL}/ws`);
   onMessageCallback = onMessage;
 
   socket.onopen = () => {

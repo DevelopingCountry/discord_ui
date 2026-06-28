@@ -2,6 +2,7 @@
 
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/components/context/AuthContext";
+import { API_URL } from "@/lib/config";
 
 export const useUpdateChannel = () => {
   const { accessToken } = useAuth();
@@ -16,7 +17,7 @@ export const useUpdateChannel = () => {
       channelId: string;
       channelname: string;
     }) => {
-      const res = await fetch(`http://localhost:8080/server/${serverId}/channel`, {
+      const res = await fetch(`${API_URL}/server/${serverId}/channel`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -25,7 +26,7 @@ export const useUpdateChannel = () => {
         body: JSON.stringify({ channelId: channelId, channelName: channelname }),
       });
 
-      console.log("채널 업데이트 요청:", `http://localhost:8080/server/${serverId}/channel`);
+      console.log("채널 업데이트 요청:", `${API_URL}/server/${serverId}/channel`);
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => null);
@@ -36,14 +37,6 @@ export const useUpdateChannel = () => {
     },
     onSuccess: (data) => {
       console.log("🗑️ 채널 업데이트 성공:", data);
-      // 기존 채널 목록을 가져오고, 해당 채널 업데이트
-      // const { channels, setChannels } = useChannelStore.getState();
-      //
-      // const updatedChannels = channels.map((channel) =>
-      //   channel.id === data.channelId ? { ...channel, name: data.channelname } : channel,
-      // );
-      //
-      // setChannels(updatedChannels); // 상태 업데이트
     },
     onError: (error) => {
       console.error("채널 업데이트 실패:", error);

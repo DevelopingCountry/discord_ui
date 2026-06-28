@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/components/context/AuthContext";
 import { useChannelStore } from "@/components/store/use-channel-store";
+import { API_URL } from "@/lib/config";
 
 export const useDeleteChannel = () => {
   const removeChannel = useChannelStore((state) => state.removeChannel);
@@ -10,7 +11,7 @@ export const useDeleteChannel = () => {
 
   return useMutation({
     mutationFn: async ({ serverId, channelId }: { serverId: string; channelId: string }) => {
-      const res = await fetch(`http://localhost:8080/server/${serverId}/channel`, {
+      const res = await fetch(`${API_URL}/server/${serverId}/channel`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -19,7 +20,7 @@ export const useDeleteChannel = () => {
         body: JSON.stringify({ channelId: channelId }),
       });
 
-      console.log("채널 삭제 요청:", `http://localhost:8080/server/${serverId}/channel`);
+      console.log("채널 삭제 요청:", `${API_URL}/server/${serverId}/channel`);
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => null);
@@ -30,7 +31,6 @@ export const useDeleteChannel = () => {
     },
     onSuccess: (data) => {
       console.log("🗑️ 채널 삭제 성공:", data);
-      // 스토어에서 채널 제거
       removeChannel(data.channelId);
     },
     onError: (error) => {

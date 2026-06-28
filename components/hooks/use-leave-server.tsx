@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/components/context/AuthContext";
 import { useServerStore } from "@/components/store/use-server-store";
+import { API_URL } from "@/lib/config";
 
 export const useLeaveServer = () => {
   const removeServer = useServerStore((state) => state.removeServer);
@@ -10,7 +11,7 @@ export const useLeaveServer = () => {
 
   return useMutation({
     mutationFn: async ({ serverId }: { serverId: string }) => {
-      const res = await fetch(`http://localhost:8080/server/${serverId}/leave`, {
+      const res = await fetch(`${API_URL}/server/${serverId}/leave`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -18,7 +19,7 @@ export const useLeaveServer = () => {
         },
       });
 
-      console.log("서버 나가기 요청:", `http://localhost:8080/server/${serverId}/leave`);
+      console.log("서버 나가기 요청:", `${API_URL}/server/${serverId}/leave`);
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => null);
@@ -29,7 +30,6 @@ export const useLeaveServer = () => {
     },
     onSuccess: (data) => {
       console.log("🗑️ 서버 나가기 성공:", data);
-      // 스토어에서 채널 제거
       removeServer(data.serverId);
     },
     onError: (error) => {
