@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "../globals.css";
 import SideUi from "@/public/ui/sideUi";
 
 import ServerSidebar from "@/components/server-sidebar";

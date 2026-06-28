@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import "../../globals.css";
 import { SectionTwoAndThree } from "@/public/homeDir/ui/sectionTwoAndThree";
 import SectionTwo from "@/public/homeDir/ui/sectionTwo";
 import { SectionTwoMain } from "@/public/homeDir/components/sectionTwoMain";
