@@ -1,9 +1,7 @@
 "use client";
 
 import SectionOne from "@/public/homeDir/ui/sectionOne";
-
 import SectionFour from "@/public/homeDir/ui/sectionFour";
-
 import { Bell, Hash, Search, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useChannelContext } from "@/components/context/channel-context";
@@ -15,6 +13,8 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import Image from "next/image";
 import { useAuth } from "@/components/context/AuthContext";
+import { API_URL, WS_URL } from "@/lib/config";
+
 type ChannelMessage = {
   channelId: string;
   messageId: string;
@@ -55,7 +55,7 @@ export default function Home() {
     if (!token || !channelId) return;
     setIsLoading(true); // API 요청 시작 시 로딩 상태로 변경
     axios
-      .get(`http://localhost:8080/channel/${channelId}/messages`, {
+      .get(`${API_URL}/channel/${channelId}/messages`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -67,7 +67,7 @@ export default function Home() {
         setIsLoading(false); // 에러 발생해도 로딩 상태 종료
       });
 
-    const socket = new SockJS(`http://localhost:8080/ws-chat?token=${token}`);
+    const socket = new SockJS(`${WS_URL}/ws-chat?token=${token}`);
     const stomp = new Client({
       webSocketFactory: () => socket,
       reconnectDelay: 5000,
@@ -109,7 +109,7 @@ export default function Home() {
 
     try {
       await axios.patch(
-        `http://localhost:8080/channel/${channelId}/message/${messageId}`,
+        `${API_URL}/channel/${channelId}/message/${messageId}`,
         { content },
         {
           headers: {
@@ -128,7 +128,7 @@ export default function Home() {
   };
   const deleteMessage = async (messageId: string) => {
     try {
-      await axios.delete(`http://localhost:8080/channel/${channelId}/message/${messageId}`, {
+      await axios.delete(`${API_URL}/channel/${channelId}/message/${messageId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       alert("✅ 메시지 삭제 완료");
@@ -138,7 +138,7 @@ export default function Home() {
       alert("❌ 삭제 실패");
     }
   };
-  // 그룹핑 로직: 날짜 + 같은 유저 + 5분 이내
+
   const groupMessagesByDateAndUser = (messages: ChannelMessage[]): GroupedDay[] => {
     const grouped: GroupedDay[] = [];
     let currentDate = "";
@@ -170,13 +170,13 @@ export default function Home() {
 
       const lastMessage = currentGroup?.messages.at(-1);
       const lastTime = lastMessage ? new Date(lastMessage.createdAt) : null;
-      const isSameGroup =
+
+      if (
         currentGroup &&
         currentGroup.userId === msg.userId &&
         lastTime &&
-        date.getTime() - lastTime.getTime() <= 60 * 1000;
-
-      if (isSameGroup) {
+        date.getTime() - lastTime.getTime() <= 60 * 1000
+      ) {
         currentGroup.messages.push({
           messageId: msg.messageId,
           content: msg.content,
