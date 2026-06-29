@@ -1,12 +1,12 @@
 "use client";
 
 import type React from "react";
-
+import { useProfileStore } from "@/components/store/use-profile";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Camera, Plus, X } from "lucide-react";
-import { useState } from "react";
+import { Camera, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useCreateServer } from "@/components/hooks/use-create-server";
 import Image from "next/image";
 
@@ -17,7 +17,14 @@ interface CustomizeServerModalProps {
 }
 
 export const CustomizeServerModal = ({ isOpen, onClose, onBack }: CustomizeServerModalProps) => {
-  const [serverName, setServerName] = useState("김태완님의 서버");
+  const profile = useProfileStore((s) => s.profile);
+  const [serverName, setServerName] = useState("내 서버");
+
+  useEffect(() => {
+    if (profile?.nickname) {
+      setServerName(`${profile.nickname}님의 서버`);
+    }
+  }, [profile?.nickname]);
   const [serverImage, setServerImage] = useState<string | null>(null);
   const { mutate } = useCreateServer();
 
@@ -32,11 +39,6 @@ export const CustomizeServerModal = ({ isOpen, onClose, onBack }: CustomizeServe
     }
   };
 
-  // const handleSubmit = () => {
-  //   // 여기에 서버 생성 로직 추가
-  //   console.log("서버 생성:", { name: serverName, image: serverImage });
-  //   onClose();
-  // };
   const handleSubmit = () => {
     console.log("서버만들기");
     mutate(
@@ -56,19 +58,6 @@ export const CustomizeServerModal = ({ isOpen, onClose, onBack }: CustomizeServe
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-[#313338] text-white border-none max-w-md p-0 overflow-hidden">
-        <DialogHeader className="p-0">
-          <div className="relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-4 top-4 text-gray-400 hover:text-white hover:bg-transparent z-10"
-              onClick={onClose}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          </div>
-        </DialogHeader>
-
         <div className="px-4 pt-4 pb-6 text-center">
           <DialogTitle className="text-2xl font-bold mb-2">서버 커스터마이즈하기</DialogTitle>
           <DialogDescription className="text-[#B5BAC1] text-center mb-6">

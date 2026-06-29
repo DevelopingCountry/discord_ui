@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const DEFAULT_WIDTH = 280; // w-60
+const DEFAULT_WIDTH = 280;
 const MIN_WIDTH = 280;
 
 export default function ResizableSidebar({ children }: { children: React.ReactNode }) {

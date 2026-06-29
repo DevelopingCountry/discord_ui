@@ -9,6 +9,7 @@ import { useAuth } from "@/components/context/AuthContext";
 import { friendsDataType } from "@/components/type/response";
 import AddFriendBar from "@/components/add-friend-bar";
 import { API_URL } from "@/lib/config";
+import Image from "next/image";
 export default function AddFriend() {
   const [username, setUsername] = useState("");
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
@@ -43,13 +44,17 @@ export default function AddFriend() {
 
   return (
     <div className="flex-1 p-4 md:p-8">
-      <header className="flex flex-col md:flex-row items-start md:items-center justify-between mb-8">
-        <div>
-          <h1 className="text-2xl font-bold text-white mb-1">친구 추가하기</h1>
-          <p className="text-[#B5BAC1]">Discord 사용자명을 사용하여 친구를 추가할 수 있어요.</p>
-        </div>
+      <header className="relative flex flex-col mb-8">
+        <Image
+          src="/assets/harmonica_bear.png"
+          alt="Harmonica Bear"
+          width={120}
+          height={120}
+          className="absolute right-0 object-contain"
+        />
+        <h1 className="text-2xl font-bold text-white mb-1">친구 추가하기</h1>
+        <p className="text-[#B5BAC1]">Discord 사용자명을 사용하여 친구를 추가할 수 있어요.</p>
       </header>
-
       <div className="border-b border-[#3F4147] pb-8">
         <div className="relative">
           <Input
