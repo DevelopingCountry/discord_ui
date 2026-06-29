@@ -1,4 +1,4 @@
-import { SectionTwoAndThree } from "@/public/homeDir/ui/sectionTwoAndThree";
+import ResizableSidebar from "@/components/resizable-sidebar";
 import SectionTwo from "@/public/homeDir/ui/sectionTwo";
 import ServerName from "@/components/server-name";
 import SectionThree from "@/public/homeDir/ui/sectionThree";
@@ -42,7 +42,7 @@ export default async function ServerRayout({
     <div className={"flex flex-1 bg-amber-200"}>
       <ChannelHydrator channels={channelsData} />
       <ChannelSubscriber serverId={serverId} token={accessToken} />
-      <SectionTwoAndThree>
+      <ResizableSidebar>
         <SectionTwo>
           <ServerName />
         </SectionTwo>
@@ -50,14 +50,9 @@ export default async function ServerRayout({
           <ChannelSidebar serverId={serverId} />
         </SectionThree>
         <UserProfileBarUi>
-          <UserProfileBar
-            imageUrl="/assets/discord_blue.png"
-            stateIcon="/assets/status-online.svg"
-            username="이원빈"
-            statusMessage="온라인"
-          />
+          <UserProfileBar stateIcon="/assets/status-online.svg" statusMessage="온라인" />
         </UserProfileBarUi>
-      </SectionTwoAndThree>
+      </ResizableSidebar>
       {children}
     </div>
   );

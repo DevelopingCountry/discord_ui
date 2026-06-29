@@ -23,7 +23,7 @@ export default function ChannelSidebar({ serverId }: { serverId: string }) {
   };
   console.log("channel-sidebar");
   return (
-    <div className="flex flex-col w-60 bg-[#2b2d31]">
+    <div className="flex flex-col w-full bg-[#2b2d31]">
       <div className="flex-1 overflow-y-auto p-2">
         <Collapsible open={isTextOpen} onOpenChange={setIsTextOpen} className="mb-2">
           <CollapsibleTrigger asChild>
