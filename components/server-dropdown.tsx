@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-
 import { Bell, Cog, Gift, UserPlus, X } from "lucide-react";
 import { useRef, useEffect } from "react";
 import { UpdateServerModal } from "@/components/modal/server/update-server-modal";
 import ServerAlarmModal from "@/components/modal/server/server-alarm-modal";
 import { server } from "@/components/type/response";
 import { LeaveServerModal } from "@/components/modal/server/leave-server-modal";
+import { ServerInviteModal } from "@/components/modal/server/server-invite-modal";
 
 interface ServerDropdownProps {
   serverId: string;
@@ -15,19 +15,23 @@ interface ServerDropdownProps {
   onClose: () => void;
   serverName: string;
   currentServer?: server;
+  onInviteClick: () => void;
 }
 
-export default function ServerDropdown({ isOpen, onClose, serverName, serverId, currentServer }: ServerDropdownProps) {
+export default function ServerDropdown({
+  isOpen,
+  onClose,
+  serverName,
+  serverId,
+  currentServer,
+  onInviteClick,
+}: ServerDropdownProps) {
   const [isUpdateSeverInfoModalOpen, setIsUpdateSeverInfoModalOpen] = useState(false);
   const [isSeverAlarmModalOpen, setIsSeverAlarmModalOpen] = useState(false);
   const [isLeaveServerModalOpen, setIsLeaveServerModalOpen] = useState(false);
+  const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const updateServerInfoHandler = () => {
-    setIsUpdateSeverInfoModalOpen(true);
-  };
-  const setServerAlarmHandler = () => {
-    setIsSeverAlarmModalOpen(true);
-  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (isUpdateSeverInfoModalOpen || isSeverAlarmModalOpen) return;
@@ -35,24 +39,14 @@ export default function ServerDropdown({ isOpen, onClose, serverName, serverId, 
         onClose();
       }
     };
-
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen, onClose, isUpdateSeverInfoModalOpen, isSeverAlarmModalOpen]);
-  // 서버 떠나기 모달 열기
-  const handleOpenLeaveServerModal = () => {
-    console.log("서버 떠나기 모달 열기");
-    setIsLeaveServerModalOpen(true);
-  };
-  const handleCloseLeaveServerModal = () => {
-    console.log("서버 떠나기 모달 닫기");
-    setIsLeaveServerModalOpen(false);
-  };
+
   if (!isOpen) return null;
 
   return (
@@ -64,31 +58,47 @@ export default function ServerDropdown({ isOpen, onClose, serverName, serverId, 
       </div>
 
       <div className="border-t border-[#35373c] py-1">
-        <DropdownItem icon={<UserPlus className="w-4 h-4" />} label="초대하기" />
-        <DropdownItem icon={<Cog className="w-4 h-4" />} label="서버 설정" onClick={updateServerInfoHandler} />
-        {/*<DropdownItem icon={<Plus className="w-4 h-4" />} label="채널 만들기" />*/}
-        {/*<DropdownItem icon={<FileText className="w-4 h-4" />} label="카테고리 만들기" />*/}
-        {/*<DropdownItem icon={<Calendar className="w-4 h-4" />} label="이벤트 만들기" />*/}
-        {/*<DropdownItem icon={<Users className="w-4 h-4" />} label="App 디렉터리" />*/}
+        <DropdownItem
+          icon={<UserPlus className="w-4 h-4" />}
+          label="초대하기"
+          onClick={() => {
+            onClose();
+            onInviteClick();
+          }}
+        />
+        <DropdownItem
+          icon={<Cog className="w-4 h-4" />}
+          label="서버 설정"
+          onClick={() => setIsUpdateSeverInfoModalOpen(true)}
+        />
       </div>
 
       <div className="border-t border-[#35373c] py-1">
-        <DropdownItem icon={<Bell className="w-4 h-4" />} label="알림 설정" onClick={setServerAlarmHandler} />
-        {/*<DropdownItem icon={<Shield className="w-4 h-4" />} label="개인정보 보호 설정" />*/}
-        {/*<DropdownItem icon={<Edit className="w-4 h-4" />} label="서버별 프로필 수정하기" />*/}
+        <DropdownItem
+          icon={<Bell className="w-4 h-4" />}
+          label="알림 설정"
+          onClick={() => setIsSeverAlarmModalOpen(true)}
+        />
       </div>
 
       <div className="border-t border-[#35373c] py-1">
         <DropdownItem
           icon={<X className="w-4 h-4" color={"#FF0E3C"} />}
           label="서버 나가기"
-          onClick={handleOpenLeaveServerModal}
+          onClick={() => setIsLeaveServerModalOpen(true)}
         />
       </div>
+
+      <ServerInviteModal
+        isOpen={isInviteModalOpen}
+        onClose={() => setIsInviteModalOpen(false)}
+        serverId={serverId}
+        serverName={serverName}
+      />
       <LeaveServerModal
         isOpen={isLeaveServerModalOpen}
-        onClose={handleCloseLeaveServerModal}
-        onBack={handleCloseLeaveServerModal}
+        onClose={() => setIsLeaveServerModalOpen(false)}
+        onBack={() => setIsLeaveServerModalOpen(false)}
         serverName={serverName}
         serverId={serverId}
       />
