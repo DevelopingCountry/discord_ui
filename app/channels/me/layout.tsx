@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { SectionTwoAndThree } from "@/public/homeDir/ui/sectionTwoAndThree";
 import SectionTwo from "@/public/homeDir/ui/sectionTwo";
 import { SectionTwoMain } from "@/public/homeDir/components/sectionTwoMain";
 import SectionThree from "@/public/homeDir/ui/sectionThree";
@@ -15,6 +14,7 @@ import { redirect } from "next/navigation";
 import { MainScreenProvider } from "@/components/context/main-screen-context";
 import { API_URL } from "@/lib/config";
 import { ProfileHydrator } from "@/components/profile-hydrator";
+import ResizableSidebar from "@/components/resizable-sidebar";
 
 export const metadata: Metadata = {
   title: "discord ui",
@@ -56,7 +56,7 @@ export default async function MeLayout({
   return (
     <FriendsProvider friendsData={friend}>
       <div className={"flex flex-1"}>
-        <SectionTwoAndThree>
+        <ResizableSidebar>
           <SectionTwo>
             <SectionTwoMain />
           </SectionTwo>
@@ -68,7 +68,7 @@ export default async function MeLayout({
           <UserProfileBarUi>
             <UserProfileBar stateIcon="/assets/status-online.svg" statusMessage="온라인" />
           </UserProfileBarUi>
-        </SectionTwoAndThree>
+        </ResizableSidebar>
         <SectionOneAndFour>
           <MainScreenProvider>{children}</MainScreenProvider>
         </SectionOneAndFour>

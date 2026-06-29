@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import Image from "next/image";
 import axios from "axios";
 import { useFriendsContext } from "@/components/context/friends-context";
 import { useAuth } from "@/components/context/AuthContext";
@@ -49,15 +48,6 @@ export default function AddFriend() {
           <h1 className="text-2xl font-bold text-white mb-1">친구 추가하기</h1>
           <p className="text-[#B5BAC1]">Discord 사용자명을 사용하여 친구를 추가할 수 있어요.</p>
         </div>
-        <div className="hidden md:block">
-          <Image
-            src="/assets/icons8-bear-48.png"
-            alt="Wumpus Detective"
-            width={120}
-            height={120}
-            className="mt-4 md:mt-0"
-          />
-        </div>
       </header>
 
       <div className="border-b border-[#3F4147] pb-8">
@@ -66,7 +56,7 @@ export default function AddFriend() {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             placeholder="Discord 사용자명을 사용하여 친구를 추가할 수 있어요."
-            className="bg-[#1E1F22] border-none text-white focus-visible:ring-0 focus-visible:ring-offset-0 pr-32"
+            className="bg-[#1E1F22] py-7 border-none text-white focus-visible:ring-0 focus-visible:ring-offset-0 pr-32"
           />
           <Button
             onClick={clickHandler}

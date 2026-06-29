@@ -10,13 +10,13 @@ const SidebarItem = ({ icon, label }: { icon: string; label: string }) => {
   const isActive = pathname === `/channels/me`; // ✅ 현재 활성 DM인지 체크
   return (
     <div
-      className={`flex items-center p-2 mt-1 rounded-md cursor-pointer min-w-[160px] ${
+      className={`flex items-center p-1 mb-3 mt-1 rounded-md cursor-pointer w-full ${
         isActive ? "bg-gray-600 text-white" : "bg-discord2and3 text-gray-300 hover:bg-gray-600 hover:text-white"
       }`}
       onClick={() => router.push("/channels/me/")}
     >
-      <Image src={icon} alt={"User Avatar"} width={39} height={30} className={"rounded-full ml-2"} />
-      <span className="ml-4 text-md font-semibold">{label}</span>
+      <Image src={icon} alt={"User Avatar"} width={42} height={30} className={"rounded-full ml-2"} />
+      <span className="ml-2 text-lg font-bold">{label}</span>
     </div>
   );
 };
