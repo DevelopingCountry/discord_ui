@@ -39,7 +39,7 @@ export default async function ServerRayout({
   console.log("channelsData = ", channelsData);
 
   return (
-    <div className={"flex flex-1 bg-amber-200"}>
+    <div className={"flex flex-1"}>
       <ChannelHydrator channels={channelsData} />
       <ChannelSubscriber serverId={serverId} token={accessToken} />
       <ResizableSidebar>
