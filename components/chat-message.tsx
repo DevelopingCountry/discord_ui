@@ -6,6 +6,7 @@ import { DmList } from "@/components/type/response";
 import { useRouter } from "next/navigation";
 import { API_URL } from "@/lib/config";
 import { useFriendsContext } from "@/components/context/friends-context";
+import { useDmStore } from "@/components/store/use-dm-store";
 
 export default function ChatMessage({
   name,
@@ -30,17 +31,18 @@ export default function ChatMessage({
   const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
   const friendsData = useFriendsContext()?.friendsData;
   const setFriendsData = useFriendsContext()?.setFriendsData;
+  const addDm = useDmStore((s) => s.addDm);
 
   const openDm = () => {
     axios
       .post(`${API_URL}/dm`, { targetId: id }, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         const newDm: DmList = res.data.response;
+        addDm(newDm); // ← 추가
         setTimeout(() => route.push(`/channels/me/${newDm.dmId}`), 0);
       })
       .catch((err) => console.error("❌ dm생성 실패:", err));
   };
-
   const acceptFriend = () => {
     axios
       .patch(`${API_URL}/friend`, { friendId, isFriend: "ACCEPTED" }, { headers: { Authorization: `Bearer ${token}` } })

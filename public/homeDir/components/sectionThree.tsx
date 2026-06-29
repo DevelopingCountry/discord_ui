@@ -46,7 +46,7 @@ const SectionThreeMain = () => {
   return (
     <div className={"mt-2"}>
       <div className={"relative max-w-[224px] ml-[8px]"}>
-        <SidebarItem icon={"/assets/friend.png"} label={"친구"} />
+        <SidebarItem icon={"/assets/friend_tap.png"} label={"친구"} />
       </div>
       <h2 className={"flex items-center pl-[18px] pt-[18px] pb-[4px] pr-[8px] h-[40px] text-[12px]/[16px] font-[600]"}>
         <span className={"flex-1 text-amber-50"}>다이렉트 메시지</span>

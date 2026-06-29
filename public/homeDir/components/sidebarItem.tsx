@@ -15,8 +15,8 @@ const SidebarItem = ({ icon, label }: { icon: string; label: string }) => {
       }`}
       onClick={() => router.push("/channels/me/")}
     >
-      <Image src={icon} alt={"User Avatar"} width={24} height={24} className={"rounded-full ml-2"} />
-      <span className="ml-3 text-sm">{label}</span>
+      <Image src={icon} alt={"User Avatar"} width={39} height={30} className={"rounded-full ml-2"} />
+      <span className="ml-4 text-md font-semibold">{label}</span>
     </div>
   );
 };
