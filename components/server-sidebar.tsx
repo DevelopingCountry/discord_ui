@@ -6,14 +6,20 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
 import { CreateServerModal } from "@/components/modal/server/server-create-modal";
 import { useServerStore } from "@/components/store/use-server-store";
-// { servers }: { servers: { id: number; name: string; imageUrl: string }[] }
+import Image from "next/image";
+
+const COLORS = ["#5865f2", "#57f287", "#fee75c", "#eb459e", "#ed4245", "#3ba55c", "#faa61a", "#00aff4"];
+
+function getColor(id: string) {
+  const n = id.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
+  return COLORS[n % COLORS.length];
+}
+
 export default function ServerSidebar() {
   const { servers } = useServerStore();
   const router = useRouter();
   const pathname = usePathname();
   const [isCreateServerModalOpen, setIsCreateServerModalOpen] = useState(false);
-  // const { servers } = useServerStore();
-  console.log("serverSideBar component");
   return (
     <TooltipProvider>
       <div className="flex flex-col items-center min-w-[72px] bg-[#1e1f22] py-3 gap-2 overflow-y-auto hide-scrollbar h-screen">
@@ -24,9 +30,7 @@ export default function ServerSidebar() {
                 "flex items-center justify-center flex-shrink-0 w-12 h-12 rounded-[24px] bg-[#313338] text-white hover:rounded-[16px] hover:bg-[#5865f2] transition-all duration-200",
                 pathname.startsWith(`/channels/me`) ? "bg-[#5865f2]" : "bg-[#313338]",
               )}
-              onClick={() => {
-                router.push("/channels/me");
-              }}
+              onClick={() => router.push("/channels/me")}
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -44,17 +48,30 @@ export default function ServerSidebar() {
                 <TooltipTrigger asChild>
                   <button
                     className={cn(
-                      "relative flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-[24px] bg-[#313338] text-white hover:rounded-[16px] hover:bg-[#5865f2] transition-all duration-200",
-                      pathname.startsWith(`/channels/${server.id}`) ? "bg-[#5865f2]" : "bg-[#313338]",
+                      "relative flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-[24px] overflow-hidden text-white hover:rounded-[16px] transition-all duration-200",
+                      pathname.startsWith(`/channels/${server.id}`) ? "rounded-[16px]" : "",
                     )}
-                    onClick={() => {
-                      router.push(`/channels/${server.id}`);
-                    }}
+                    onClick={() => router.push(`/channels/${server.id}`)}
                   >
                     {pathname.startsWith(`/channels/${server.id}`) && (
-                      <div className="absolute left-0 w-1 h-10 bg-white rounded-r-full"></div>
+                      <div className="absolute left-0 w-1 h-10 bg-white rounded-r-full z-10" />
                     )}
-                    {server.name}
+                    {server.imageUrl ? (
+                      <Image
+                        src={server.imageUrl}
+                        alt={server.name}
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span
+                        className="w-full h-full flex items-center justify-center text-white font-bold text-lg"
+                        style={{ backgroundColor: getColor(server.id) }}
+                      >
+                        {server.name?.charAt(0) ?? "?"}
+                      </span>
+                    )}
                   </button>
                 </TooltipTrigger>
                 <TooltipContent side="right">
@@ -64,33 +81,6 @@ export default function ServerSidebar() {
             </li>
           ))}
         </ul>
-        {/*{servers.map((server) => (*/}
-        {/*  <div key={server.id}>*/}
-        {/*    <TooltipProvider>*/}
-        {/*      <Tooltip>*/}
-        {/*        <TooltipTrigger asChild>*/}
-        {/*          <button*/}
-        {/*            className={cn(*/}
-        {/*              "relative flex-shrink-0 flex items-center justify-center w-12 h-12 rounded-[24px] bg-[#313338] text-white hover:rounded-[16px] hover:bg-[#5865f2] transition-all duration-200",*/}
-        {/*              pathname.startsWith(`/servers/${server.id}`) ? "bg-[#5865f2]" : "bg-[#313338]",*/}
-        {/*            )}*/}
-        {/*            onClick={() => {*/}
-        {/*              router.push(`/servers/${server.id}`);*/}
-        {/*            }}*/}
-        {/*          >*/}
-        {/*            {pathname.startsWith(`/servers/${server.id}`) && (*/}
-        {/*              <div className="absolute left-0 w-1 h-10 bg-white rounded-r-full"></div>*/}
-        {/*            )}*/}
-        {/*            {server.imageUrl}*/}
-        {/*          </button>*/}
-        {/*        </TooltipTrigger>*/}
-        {/*        <TooltipContent side="right">*/}
-        {/*          <p>{server?.name || "서버 이름 없음"}</p>*/}
-        {/*        </TooltipContent>*/}
-        {/*      </Tooltip>*/}
-        {/*    </TooltipProvider>*/}
-        {/*  </div>*/}
-        {/*))}*/}
 
         <Tooltip>
           <TooltipTrigger asChild>

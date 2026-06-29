@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup } from "@/components/ui/radio-group";
-import { Hash, Volume2, X } from "lucide-react";
+import { Hash, Volume2 } from "lucide-react";
 import { useState } from "react";
 import { useCreateChannel } from "@/components/hooks/use-create-channel";
 
@@ -53,9 +53,6 @@ export const CreateChannelModal = ({ isOpen, onClose, serverId, defaultType }: C
         <DialogHeader>
           <div className="flex justify-between items-center">
             <DialogTitle className="text-xl font-bold">채널 만들기</DialogTitle>
-            <Button variant="ghost" size="icon" onClick={handleClose} className="text-gray-400 hover:text-white">
-              <X className="h-4 w-4" />
-            </Button>
           </div>
           {/*<DialogDescription className="text-[#B5BAC1] text-sm">자유채널에 추가 있음</DialogDescription>*/}
         </DialogHeader>

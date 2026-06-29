@@ -1,14 +1,15 @@
 "use client";
 
 import type React from "react";
-import { useProfileStore } from "@/components/store/use-profile";
+
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Camera, Plus } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Camera } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useCreateServer } from "@/components/hooks/use-create-server";
 import Image from "next/image";
+import { useProfileStore } from "@/components/store/use-profile";
 
 interface CustomizeServerModalProps {
   isOpen: boolean;
@@ -16,41 +17,54 @@ interface CustomizeServerModalProps {
   onBack: () => void;
 }
 
+const compressImage = (file: File, maxSize = 256): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const img = new window.Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = maxSize;
+      canvas.height = maxSize;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        reject(new Error("no ctx"));
+        return;
+      }
+      ctx.drawImage(img, 0, 0, maxSize, maxSize);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/jpeg", 0.7));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+
 export const CustomizeServerModal = ({ isOpen, onClose, onBack }: CustomizeServerModalProps) => {
   const profile = useProfileStore((s) => s.profile);
   const [serverName, setServerName] = useState("내 서버");
-
-  useEffect(() => {
-    if (profile?.nickname) {
-      setServerName(`${profile.nickname}님의 서버`);
-    }
-  }, [profile?.nickname]);
   const [serverImage, setServerImage] = useState<string | null>(null);
   const { mutate } = useCreateServer();
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    if (profile?.nickname) setServerName(`${profile.nickname}님의 서버`);
+  }, [profile?.nickname]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setServerImage(event.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file) return;
+    try {
+      const compressed = await compressImage(file);
+      setServerImage(compressed);
+    } catch {
+      console.error("이미지 압축 실패");
     }
   };
 
   const handleSubmit = () => {
-    console.log("서버만들기");
     mutate(
-      { serverName: serverName, imageUrl: serverImage },
+      { serverName, imageUrl: serverImage },
       {
-        onSuccess: () => {
-          onClose(); // 모달 닫기
-        },
-        onError: (err) => {
-          console.error("서버 생성 실패:", err);
-          // 필요하면 toast.error("서버 생성에 실패했습니다."); 등 추가 가능
-        },
+        onSuccess: () => onClose(),
+        onError: (err) => console.error("서버 생성 실패:", err),
       },
     );
   };
@@ -58,23 +72,25 @@ export const CustomizeServerModal = ({ isOpen, onClose, onBack }: CustomizeServe
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="bg-[#313338] text-white border-none max-w-md p-0 overflow-hidden">
-        <div className="px-4 pt-4 pb-6 text-center">
+        <div className="px-4 pt-8 pb-6 text-center">
           <DialogTitle className="text-2xl font-bold mb-2">서버 커스터마이즈하기</DialogTitle>
           <DialogDescription className="text-[#B5BAC1] text-center mb-6">
             새로운 서버에 이름과 아이콘을 부여해 개성을 드러내 보세요. 나중에 언제든 바꿀 수 있어요.
           </DialogDescription>
 
           <div className="flex flex-col items-center mb-6">
-            <div className="relative mb-6">
+            <label htmlFor="server-image" className="cursor-pointer mb-6 group">
               <div
-                className={`w-20 h-20 rounded-full flex items-center justify-center overflow-hidden ${
+                className={`w-20 h-20 rounded-full flex items-center justify-center overflow-hidden group-hover:opacity-80 transition-opacity ${
                   serverImage ? "" : "border-2 border-dashed border-[#5865F2]"
                 }`}
               >
                 {serverImage ? (
                   <Image
-                    src={serverImage || "/placeholder.svg"}
+                    src={serverImage}
                     alt="Server Icon"
+                    width={80}
+                    height={80}
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -82,21 +98,10 @@ export const CustomizeServerModal = ({ isOpen, onClose, onBack }: CustomizeServe
                     <Camera className="h-8 w-8 text-white" />
                   </div>
                 )}
-                <div className="absolute bottom-0 right-0 bg-[#5865F2] rounded-full p-1 cursor-pointer">
-                  <label htmlFor="server-image" className="cursor-pointer">
-                    <Plus className="h-4 w-4 text-white" />
-                  </label>
-                  <input
-                    type="file"
-                    id="server-image"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                  />
-                </div>
               </div>
               <div className="text-xs text-[#B5BAC1] mt-2">UPLOAD</div>
-            </div>
+            </label>
+            <input type="file" id="server-image" className="hidden" accept="image/*" onChange={handleImageUpload} />
 
             <div className="w-full space-y-2">
               <div className="text-left text-xs font-semibold text-[#B5BAC1]">서버 이름</div>
