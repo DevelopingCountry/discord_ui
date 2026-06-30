@@ -83,18 +83,15 @@ export default function ChannelSidebar({ serverId }: { serverId: string }) {
                 .filter((channel) => channel.type === "VOICE")
                 .map((channel, index) => (
                   <li key={index}>
-                    <VoiceChannelItem name={channel.name} channelId={channel.id} serverId={serverId} />
+                    <VoiceChannelItem
+                      name={channel.name}
+                      channelId={channel.id}
+                      serverId={serverId}
+                      creatorId={channel.creatorId}
+                    />
                   </li>
                 ))}
             </ul>
-            {/*{channels*/}
-            {/*  .filter((channel) => channel.type === "VOICE")*/}
-            {/*  .map((channel) => (*/}
-            {/*    <VoiceChannelItem name={channel.name} channelId={channel.id} serverId={serverId} key={channel.id} />*/}
-            {/*  ))}*/}
-            {/*<VoiceChannelItem name="General" />*/}
-            {/*<VoiceChannelItem name="Gaming" />*/}
-            {/*<VoiceChannelItem name="Music" />*/}
           </CollapsibleContent>
         </Collapsible>
       </div>
@@ -107,17 +104,3 @@ export default function ChannelSidebar({ serverId }: { serverId: string }) {
     </div>
   );
 }
-//
-// function ChannelItem({ name, active = false }: { name: string; active?: boolean }) {
-//   return (
-//     <div
-//       className={`flex items-center gap-1.5 px-2 py-1 rounded text-sm ${
-//         active ? "bg-[#393c41] text-white" : "text-[#96989d] hover:text-white hover:bg-[#35373c]"
-//       }`}
-//       onClick={() => {}}
-//     >
-//       <Hash className="w-5 h-5 text-[#96989d]" />
-//       {name}
-//     </div>
-//   );
-// }

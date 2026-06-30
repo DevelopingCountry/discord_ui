@@ -14,6 +14,7 @@ import { Client } from "@stomp/stompjs";
 import Image from "next/image";
 import { useAuth } from "@/components/context/AuthContext";
 import { usePathname } from "next/navigation";
+import { VoiceChannelPage } from "@/components/voice-channel-page";
 
 const API = "http://localhost:8080";
 
@@ -180,6 +181,9 @@ export default function ChannelPage() {
   const onlineMembers = members.filter((m) => m.online);
   const offlineMembers = members.filter((m) => !m.online);
 
+  if (currentChannel?.type === "VOICE") {
+    return <VoiceChannelPage channelId={channelId ?? ""} channelName={currentChannel.name} serverId={serverId} />;
+  }
   return (
     <>
       <SectionOne>
