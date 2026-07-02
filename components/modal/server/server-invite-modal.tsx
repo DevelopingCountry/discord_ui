@@ -6,8 +6,7 @@ import { useAuth } from "@/components/context/AuthContext";
 import { friendsDataType } from "@/components/type/response";
 import Image from "next/image";
 import { Search } from "lucide-react";
-
-const API = process.env.NEXT_PUBLIC_API_URL;
+import { API_URL } from "@/lib/config";
 
 interface ServerInviteModalProps {
   isOpen: boolean;
@@ -22,10 +21,9 @@ export function ServerInviteModal({ isOpen, onClose, serverId, serverName }: Ser
   const [search, setSearch] = useState("");
   const [invited, setInvited] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     if (!isOpen || !accessToken) return;
-    fetch(`${API}/friend`, {
+    fetch(`${API_URL}/friend`, {
       headers: { Authorization: `Bearer ${accessToken}` },
     })
       .then((r) => r.json())
@@ -40,7 +38,7 @@ export function ServerInviteModal({ isOpen, onClose, serverId, serverName }: Ser
     if (invited.has(friendId) || loading) return;
     setLoading(true);
     try {
-      const res = await fetch(`${API}/server/${serverId}/invite`, {
+      const res = await fetch(`${API_URL}/server/${serverId}/invite`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -53,6 +51,7 @@ export function ServerInviteModal({ isOpen, onClose, serverId, serverName }: Ser
       }
     } catch (e) {
       console.error(e);
+      console.log("친구 초대에서 에러뜸");
     } finally {
       setLoading(false);
     }
