@@ -9,6 +9,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { MyProfileHydrator } from "@/components/hydrate/my-profile-hydrator";
 import NotificationSubscribe from "@/lib/NotificationSubscribe";
+import NotificationToastHost from "@/components/NotificationToastHost";
 import { API_URL } from "@/lib/config";
 
 export const metadata: Metadata = {
@@ -52,6 +53,7 @@ export default async function ChannelsLayout({
       <ServerHydrator servers={servers} />
       <MyProfileHydrator myProfile={profile} />
       <NotificationSubscribe myProfile={profile} />
+      <NotificationToastHost />
       <div className="bg-discordSidebar w-screen h-screen flex overflow-x-hidden overflow-y-hidden">
         <SideUi>
           <ServerSidebar />

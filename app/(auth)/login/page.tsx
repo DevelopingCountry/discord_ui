@@ -2,14 +2,43 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "@/components/context/AuthContext";
+import { API_URL } from "@/lib/config";
 
 const KAKAO_CLIENT_ID = "d0e33acc669d3d7994242e6879cefb32";
 const REDIRECT_URI = "http://localhost:3000/auth/kakao";
 
+const DEV_TEST_USERS = [
+  { email: "dev1@test.local", nickname: "테스트유저1" },
+  { email: "dev2@test.local", nickname: "테스트유저2" },
+  { email: "dev3@test.local", nickname: "테스트유저3" },
+];
+
 export default function LoginPage() {
+  const { login, settingUserId } = useAuth();
+
   const handleKakaoLogin = () => {
     const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
     window.location.href = kakaoAuthUrl;
+  };
+
+  const handleDevLogin = async (email: string, nickname: string) => {
+    try {
+      const res = await fetch(`${API_URL}/auth/dev-login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, nickname }),
+      });
+      const data = await res.json();
+      const { accessToken, userId } = data.response;
+      login(accessToken);
+      settingUserId(userId);
+      document.cookie = `accessToken=${accessToken}; path=/;`;
+      localStorage.setItem("accessToken", accessToken);
+      window.location.href = "/channels/me";
+    } catch (e) {
+      console.error("개발용 로그인 실패:", e);
+    }
   };
 
   return (
@@ -67,6 +96,23 @@ export default function LoginPage() {
             >
               카카오로 로그인
             </button>
+
+            {process.env.NODE_ENV === "development" && (
+              <div className="mt-4 border border-dashed border-white/20 rounded-xl p-3">
+                <p className="text-white/40 text-xs text-center mb-2">개발용 (프로덕션에서는 표시되지 않음)</p>
+                <div className="flex gap-2">
+                  {DEV_TEST_USERS.map((u) => (
+                    <button
+                      key={u.email}
+                      onClick={() => handleDevLogin(u.email, u.nickname)}
+                      className="flex-1 bg-white/10 hover:bg-white/20 text-white/80 text-xs font-medium py-2 rounded-lg transition-colors"
+                    >
+                      {u.nickname}로 로그인
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center gap-3 my-6">
               <div className="flex-1 h-px bg-white/15" />
