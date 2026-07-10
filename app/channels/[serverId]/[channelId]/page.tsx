@@ -9,14 +9,13 @@ import { useChannelStore } from "@/components/store/use-channel-store";
 import MessageInput from "@/components/messeage-input";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
-import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
 import Image from "next/image";
 import { useAuth } from "@/components/context/AuthContext";
 import { usePathname } from "next/navigation";
 import { VoiceChannelPage } from "@/components/voice-channel-page";
-
-const API = "http://localhost:8080";
+import { API_URL } from "@/lib/config";
+import { publish } from "@/lib/socket";
+import { useSocketSubscribe } from "@/components/hooks/useSocketSubscribe";
 
 type ChannelMessage = {
   channelId: string;
@@ -92,7 +91,6 @@ export default function ChannelPage() {
   const serverId = usePathname().split("/")[2];
 
   const [messages, setMessages] = useState<ChannelMessage[]>([]);
-  const [client, setClient] = useState<Client | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [editingMessage, setEditingMessage] = useState<{ messageId: string; content: string } | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
@@ -102,7 +100,7 @@ export default function ChannelPage() {
   useEffect(() => {
     if (!token || !serverId) return;
     axios
-      .get(`${API}/server/${serverId}/members`, { headers: { Authorization: `Bearer ${token}` } })
+      .get(`${API_URL}/server/${serverId}/members`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => setMembers(res.data.response || []))
       .catch(() => {});
   }, [token, serverId]);
@@ -111,50 +109,40 @@ export default function ChannelPage() {
     if (!token || !channelId) return;
     setIsLoading(true);
     axios
-      .get(`${API}/channel/${channelId}/messages`, { headers: { Authorization: `Bearer ${token}` } })
+      .get(`${API_URL}/channel/${channelId}/messages`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => {
         setMessages(res.data.response || []);
         setIsLoading(false);
       })
       .catch(() => setIsLoading(false));
-
-    const socket = new SockJS(`${API}/ws-chat?token=${token}`);
-    const stomp = new Client({
-      webSocketFactory: () => socket,
-      reconnectDelay: 5000,
-      onConnect: () => {
-        stomp.subscribe(`/topic/channel/${channelId}`, (msg) => {
-          const data = JSON.parse(msg.body);
-          if (data.type === "SEND") setMessages((prev) => [...prev, data.message]);
-          else if (data.type === "UPDATE")
-            setMessages((prev) =>
-              prev.map((m) => (m.messageId === data.message.messageId ? { ...m, content: data.message.content } : m)),
-            );
-          else if (data.type === "DELETE")
-            setMessages((prev) => prev.filter((m) => m.messageId !== data.message.messageId));
-        });
-        setClient(stomp);
-      },
-    });
-    stomp.activate();
-    return () => {
-      stomp.deactivate();
-    };
   }, [token, channelId]);
+
+  useSocketSubscribe<{ type: "SEND" | "UPDATE" | "DELETE"; message: ChannelMessage }>(
+    channelId ? `/topic/channel/${channelId}` : null,
+    (data) => {
+      if (data.type === "SEND") setMessages((prev) => [...prev, data.message]);
+      else if (data.type === "UPDATE")
+        setMessages((prev) =>
+          prev.map((m) => (m.messageId === data.message.messageId ? { ...m, content: data.message.content } : m)),
+        );
+      else if (data.type === "DELETE")
+        setMessages((prev) => prev.filter((m) => m.messageId !== data.message.messageId));
+    },
+  );
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   }, [messages]);
 
   const sendMessage = (content: string) => {
-    if (!client || !content.trim()) return;
-    client.publish({ destination: `/app/channel/${channelId}`, body: JSON.stringify({ content }) });
+    if (!channelId || !content.trim()) return;
+    publish(`/app/channel/${channelId}`, { content });
   };
   const updateMessage = async (messageId: string, content: string) => {
     if (!content.trim()) return;
     try {
       await axios.patch(
-        `${API}/channel/${channelId}/message/${messageId}`,
+        `${API_URL}/channel/${channelId}/message/${messageId}`,
         { content },
         {
           headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
@@ -168,7 +156,7 @@ export default function ChannelPage() {
   };
   const deleteMessage = async (messageId: string) => {
     try {
-      await axios.delete(`${API}/channel/${channelId}/message/${messageId}`, {
+      await axios.delete(`${API_URL}/channel/${channelId}/message/${messageId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMessages((prev) => prev.filter((m) => m.messageId !== messageId));

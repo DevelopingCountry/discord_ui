@@ -1,14 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import SockJS from "sockjs-client";
-import { Client } from "@stomp/stompjs";
 import axios from "axios";
 import MessageInput from "@/components/messeage-input";
 import SectionFour from "@/public/homeDir/ui/sectionFour";
 import Image from "next/image";
 import { useAuth } from "@/components/context/AuthContext";
 import { API_URL } from "@/lib/config";
+import { publish } from "@/lib/socket";
+import { useSocketSubscribe } from "@/components/hooks/useSocketSubscribe";
 import { useDmStore } from "@/components/store/use-dm-store";
 import { useRouter } from "next/navigation";
 
@@ -36,7 +36,6 @@ type GroupedDay = {
 
 export default function DmChat({ dmId }: { dmId: string | undefined }) {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [client, setClient] = useState<Client | null>(null);
   const [editingMessage, setEditingMessage] = useState<{ messageId: string; content: string } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
@@ -57,36 +56,34 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
       .get(`${API_URL}/dm/${dmId}`, { headers: { Authorization: `Bearer ${token}` } })
       .then((res) => setMessages(res.data.response || []))
       .catch((err) => console.error("❌ 메시지 불러오기 실패:", err));
-
-    const socket = new SockJS(`${API_URL}/ws-chat?token=${token}`);
-    const stomp = new Client({
-      webSocketFactory: () => socket,
-      reconnectDelay: 5000,
-      onConnect: () => {
-        stomp.subscribe(`/topic/dm/${dmId}`, (msg) => {
-          const data = JSON.parse(msg.body);
-          if (data.type === "SEND") {
-            setMessages((prev) => [...prev, data.message]);
-          } else if (data.type === "UPDATE") {
-            setMessages((prev) =>
-              prev.map((m) => (m.messageId === data.message.messageId ? { ...m, content: data.message.content } : m)),
-            );
-          } else if (data.type === "DELETE") {
-            setMessages((prev) => prev.filter((m) => m.messageId !== data.message.messageId));
-          }
-        });
-        setClient(stomp);
-      },
-    });
-    stomp.activate();
-    return () => {
-      stomp.deactivate();
-    };
   }, [token, dmId]);
 
+  useEffect(() => {
+    if (!dmId) return;
+    publish(`/app/dm/${dmId}/enter`, {});
+    return () => {
+      publish(`/app/dm/${dmId}/leave`, {});
+    };
+  }, [dmId]);
+
+  useSocketSubscribe<{ type: "SEND" | "UPDATE" | "DELETE"; message: Message }>(
+    dmId ? `/topic/dm/${dmId}` : null,
+    (data) => {
+      if (data.type === "SEND") {
+        setMessages((prev) => [...prev, data.message]);
+      } else if (data.type === "UPDATE") {
+        setMessages((prev) =>
+          prev.map((m) => (m.messageId === data.message.messageId ? { ...m, content: data.message.content } : m)),
+        );
+      } else if (data.type === "DELETE") {
+        setMessages((prev) => prev.filter((m) => m.messageId !== data.message.messageId));
+      }
+    },
+  );
+
   const sendMessage = (content: string) => {
-    if (!client || !content.trim()) return;
-    client.publish({ destination: `/app/dm/${dmId}`, body: JSON.stringify({ content }) });
+    if (!dmId || !content.trim()) return;
+    publish(`/app/dm/${dmId}`, { content });
   };
 
   const updateMessage = async (messageId: string, content: string) => {

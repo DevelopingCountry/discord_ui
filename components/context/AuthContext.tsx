@@ -3,6 +3,7 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useRouter } from "next/navigation";
+import { disconnectSocket } from "@/lib/socket";
 
 interface AuthContextType {
   userId: string | null;
@@ -38,6 +39,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = () => {
     localStorage.removeItem("accessToken");
     setAccessToken(null);
+    disconnectSocket();
     router.push("/login");
   };
 

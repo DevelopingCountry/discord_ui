@@ -41,7 +41,7 @@ export default async function ServerRayout({
   return (
     <div className={"flex flex-1"}>
       <ChannelHydrator channels={channelsData} />
-      <ChannelSubscriber serverId={serverId} token={accessToken} />
+      <ChannelSubscriber serverId={serverId} />
       <ResizableSidebar>
         <SectionTwo>
           <ServerName />

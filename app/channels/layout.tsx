@@ -52,7 +52,7 @@ export default async function ChannelsLayout({
     <>
       <ServerHydrator servers={servers} />
       <MyProfileHydrator myProfile={profile} />
-      <NotificationSubscribe myProfile={profile} />
+      <NotificationSubscribe />
       <NotificationToastHost />
       <div className="bg-discordSidebar w-screen h-screen flex overflow-x-hidden overflow-y-hidden">
         <SideUi>
