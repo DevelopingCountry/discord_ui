@@ -6,9 +6,13 @@ import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 import { Profile } from "@/components/type/response";
 import { API_URL } from "@/lib/config";
+import { useInviteStore, InvitePayload } from "@/components/store/use-invite-store";
+import { useNotificationToastStore } from "@/components/store/use-notification-toast-store";
 
 export default function NotificationSubscribe({ myProfile }: { myProfile: Profile }) {
   const { accessToken } = useAuth();
+  const { addInvite } = useInviteStore();
+  const { addToast } = useNotificationToastStore();
   useEffect(() => {
     if (Notification.permission === "default") {
       Notification.requestPermission().then((permission) => {
@@ -29,17 +33,27 @@ export default function NotificationSubscribe({ myProfile }: { myProfile: Profil
         console.log("📩 data 확인:", data);
         const type = data.action;
         const payload = data.payload;
-        console.log("📩 DM 알림 구조 확인:", payload.senderName, payload.message);
         console.log("📩 알림 수신:", type, payload);
         switch (type) {
           case "INVITE":
-            console.log("서버 초대 알림");
+            addInvite(payload as InvitePayload);
             break;
           case "DM":
-            console.log("DM 알림");
+            addToast({
+              type: "DM",
+              title: `${payload.fromNickname}님의 DM`,
+              message: payload.message,
+              imageUrl: payload.fromImageUrl,
+              href: payload.dmId ? `/channels/me/${payload.dmId}` : undefined,
+            });
             break;
           case "FRIEND_REQUEST":
-            console.log("친구 요청 알림");
+            addToast({
+              type: "FRIEND_REQUEST",
+              title: `${payload.fromNickname}님의 친구 요청`,
+              message: "친구 요청이 도착했습니다",
+              imageUrl: payload.fromImageUrl,
+            });
             break;
           default:
         }
@@ -50,6 +64,6 @@ export default function NotificationSubscribe({ myProfile }: { myProfile: Profil
     return () => {
       stomp.deactivate();
     };
-  }, [accessToken, myProfile]);
+  }, [accessToken, myProfile, addInvite, addToast]);
   return null;
 }
