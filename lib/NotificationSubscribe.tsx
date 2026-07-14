@@ -6,6 +6,7 @@ import { connectSocket } from "@/lib/socket";
 import { useSocketSubscribe } from "@/components/hooks/useSocketSubscribe";
 import { useInviteStore, InvitePayload } from "@/components/store/use-invite-store";
 import { useNotificationToastStore } from "@/components/store/use-notification-toast-store";
+import { useOnlineFriendsStore, OnlineFriend } from "@/components/store/use-online-friends-store";
 
 type NotificationPayload = {
   fromNickname: string;
@@ -22,6 +23,7 @@ export default function NotificationSubscribe() {
   const { accessToken } = useAuth();
   const { addInvite } = useInviteStore();
   const { addToast } = useNotificationToastStore();
+  const { addOnlineFriend, removeOnlineFriend } = useOnlineFriendsStore();
   useEffect(() => {
     if (Notification.permission === "default") {
       Notification.requestPermission().then((permission) => {
@@ -59,6 +61,12 @@ export default function NotificationSubscribe() {
           message: "친구 요청이 도착했습니다",
           imageUrl: payload.fromImageUrl,
         });
+        break;
+      case "FRIEND_ONLINE":
+        addOnlineFriend(payload as unknown as OnlineFriend);
+        break;
+      case "FRIEND_OFFLINE":
+        removeOnlineFriend((payload as unknown as { friendId: string }).friendId);
         break;
       default:
     }

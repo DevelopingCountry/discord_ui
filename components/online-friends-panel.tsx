@@ -1,18 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 import { API_URL } from "@/lib/config";
-
-type OnlineFriend = {
-  friendId: string;
-  name: string;
-  imageUrl: string;
-  status: string;
-};
+import { useOnlineFriendsStore } from "@/components/store/use-online-friends-store";
 
 export default function OnlineFriendsPanel() {
-  const [onlineFriends, setOnlineFriends] = useState<OnlineFriend[]>([]);
+  const { onlineFriends, setOnlineFriends } = useOnlineFriendsStore();
   const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
 
   useEffect(() => {
@@ -26,7 +20,7 @@ export default function OnlineFriendsPanel() {
         setOnlineFriends(Array.isArray(result) ? result : []);
       })
       .catch(console.error);
-  }, [token]);
+  }, [token, setOnlineFriends]);
 
   return (
     <div className="min-w-[358px] bg-discordDark hidden xl:flex flex-col shadow-elevationLeft">

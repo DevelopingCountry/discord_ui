@@ -76,8 +76,11 @@ app/channels/layout.tsx                       보호됨. /server, /me 서버사�
 
 ### 채팅 (STOMP over SockJS)
 
-- 공유 클라이언트 없이 **여러 컴포넌트가 각자 독립적으로** `${API_URL}/ws-chat?token=...`에 SockJS+STOMP 연결을 새로 맺습니다.
-- 실제 DM 채팅 로직은 전부 `components/dm-chat2.tsx`(export명 `DmChat`, `app/channels/me/[dmId]/page.tsx`에서 `DmChat2`로 import)에 **인라인으로** 구현되어 있습니다.
+- `lib/socket.ts`가 앱 전역에서 공유하는 **싱글턴** SockJS+STOMP 클라이언트입니다 (`connectSocket`/`disconnectSocket`/`subscribe`/`publish` export). 구독은 destination별로 콜백을 모아 하나의 STOMP subscription만 유지합니다.
+  - `lib/NotificationSubscribe.tsx`가 로그인 시 `connectSocket(accessToken)`으로 전역 연결을 최초 수립합니다.
+  - `components/context/AuthContext.tsx`가 로그아웃 시 `disconnectSocket()`으로 연결을 종료합니다.
+  - `components/hooks/useSocketSubscribe.ts` — `lib/socket.ts`의 `subscribe`를 감싼 React 훅. `components/ChannelSubscriber.tsx`, `components/dm-chat2.tsx`가 이 훅으로 구독합니다.
+- 실제 DM 채팅 UI는 `components/dm-chat2.tsx`(export명 `DmChat`, `app/channels/me/[dmId]/page.tsx`에서 `DmChat2`로 import)에 있습니다. 메시지 렌더링/입력은 인라인이지만, 소켓 연결·구독·발행 배선은 `lib/socket.ts` + `useSocketSubscribe` 공용 모듈을 사용합니다.
   - `/topic/dm/{dmId}` 구독, `/app/dm/{dmId}`로 publish.
   - 메시지 수정/삭제는 STOMP가 아니라 REST(`axios.patch`/`delete`).
 - `components/ChannelSubscriber.tsx` — `/topic/server/{serverId}/channels` 구독, `useChannelStore` 갱신.
@@ -100,13 +103,13 @@ app/channels/layout.tsx                       보호됨. /server, /me 서버사�
 | `components/store/useVoiceStore.ts` | **데드 코드** (import 없음, `connectedChannelId`가 number 타입) |
 | `components/store/voiceStore.ts` | **실사용** (모든 음성 컴포넌트가 import, id는 string 타입) |
 | `components/message-list.tsx` | 데드 코드, `lib/StompChat.ts` 사용 |
-| `components/MessageList.tsx` | 데드 코드, `lib/socket.ts` 사용 |
-| `lib/socket.ts` | 미사용 (위 데드 파일에서만 참조) |
 | `lib/StompChat.ts` | 미사용 (위 데드 파일에서만 참조) |
 | `components/chat-message.tsx` | 이름과 달리 **친구 목록 행(row) 컴포넌트**임. 채팅 메시지 버블이 아님 |
 | `components/messeage-input.tsx` | 파일명 오타(message → messeage)지만 **실사용 중인** 진짜 메시지 입력 컴포넌트 |
 
-실제 채팅 UI/로직은 전부 `dm-chat2.tsx` + `messeage-input.tsx`에 있습니다.
+`lib/socket.ts`는 더 이상 데드 코드가 아닙니다 — 커밋 `d223680`("socket 하나로 통합") 이후 앱 전역 공유 STOMP 싱글턴으로 재작성되어 핵심 실시간 통신 모듈로 실사용 중입니다 (위 "실시간 통신 아키텍처" 참고). `components/MessageList.tsx`(대문자, 이 모듈을 참조하던 옛 데드 코드)는 이미 파일 자체가 삭제되었습니다.
+
+연결/구독/발행 배선은 `lib/socket.ts` + `useSocketSubscribe`, 메시지 렌더링/입력 UI는 `dm-chat2.tsx` + `messeage-input.tsx`에 있습니다.
 
 ## 알려진 미완성/버그 지점
 

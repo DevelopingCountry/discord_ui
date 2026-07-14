@@ -6,7 +6,6 @@ import { useSocketSubscribe } from "@/components/hooks/useSocketSubscribe";
 
 interface ChannelSubscriberProps {
   serverId: string;
-  token: string;
 }
 
 export default function ChannelSubscriber({ serverId }: ChannelSubscriberProps) {
