@@ -190,7 +190,7 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
 
   return (
     <SectionFour>
-      <div ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-[90px]">
+      <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto custom-scrollbar px-4">
         {/* DM 상단 헤더 */}
         <div className="pt-16 pb-6 border-b border-[#3f4147] mb-4">
           <Image src={partnerAvatar} alt={partnerName} width={80} height={80} className="rounded-full mb-4" />
@@ -293,7 +293,7 @@ export default function DmChat({ dmId }: { dmId: string | undefined }) {
         ))}
       </div>
 
-      <div className="absolute bottom-0 z-20 w-full bg-discord1and4">
+      <div className="flex-shrink-0 px-4 pb-4 bg-discord1and4">
         <MessageInput onSend={sendMessage} />
       </div>
     </SectionFour>

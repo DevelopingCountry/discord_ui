@@ -10,7 +10,7 @@ export default function Home() {
 
   return (
     <div className={"flex h-full w-full"}>
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 flex flex-col min-h-0">
         <DmChat2 dmId={dmId} />
       </div>
 

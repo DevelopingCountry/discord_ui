@@ -200,7 +200,7 @@ export default function ChannelPage() {
       <SectionFour>
         <div className="flex flex-1 overflow-hidden">
           {/* 메시지 영역 */}
-          <div ref={scrollRef} className="flex-1 overflow-y-auto custom-scrollbar pb-[80px]">
+          <div ref={scrollRef} className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pb-[80px]">
             {/* 채널 환영 헤더 */}
             <div className="px-4 pt-16 mb-8">
               <div className="w-20 h-20 bg-[#4e5058] rounded-full flex items-center justify-center mb-4">
