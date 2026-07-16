@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
-import SectionTwo from "@/public/homeDir/ui/sectionTwo";
-import { SectionTwoMain } from "@/public/homeDir/components/sectionTwoMain";
-import SectionThree from "@/public/homeDir/ui/sectionThree";
-import SectionThreeMain from "@/public/homeDir/components/sectionThree";
-import UserProfileBarUi from "@/public/ui/UserProfileBarUi";
-import UserProfileBar from "@/public/components/UserProfileBar";
-import SectionOneAndFour from "@/public/homeDir/ui/sectionOneAndFour";
+import SectionTwo from "@/components/layout/sectionTwo";
+import { SectionTwoMain } from "@/components/dm/sectionTwoMain";
+import SectionThree from "@/components/layout/sectionThree";
+import SectionThreeMain from "@/components/dm/sectionThreeMain";
+import UserProfileBarUi from "@/components/layout/UserProfileBarUi";
+import UserProfileBar from "@/components/layout/UserProfileBar";
+import SectionOneAndFour from "@/components/layout/sectionOneAndFour";
 import { DmList } from "@/components/type/response";
-import { FriendsProvider } from "@/components/context/friends-context";
-import { DmHydrator } from "@/components/hydrate/dm-hydrator";
+import { FriendsHydrator } from "@/components/friend/friends-hydrator";
+import { DmHydrator } from "@/components/dm/dm-hydrator";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { MainScreenProvider } from "@/components/context/main-screen-context";
+import { MainScreenProvider } from "@/components/friend/main-screen-context";
 import { API_URL } from "@/lib/config";
-import { ProfileHydrator } from "@/components/profile-hydrator";
-import ResizableSidebar from "@/components/resizable-sidebar";
+import { ProfileHydrator } from "@/components/profile/profile-hydrator";
+import ResizableSidebar from "@/components/layout/resizable-sidebar";
 
 export const metadata: Metadata = {
   title: "discord ui",
@@ -40,7 +40,7 @@ export default async function MeLayout({
   });
   console.log("[/channels/me/layout] fetch");
   const dm = await dms.json();
-  const dmList: DmList[] = await dm.response;
+  const dmList: DmList[] = dm.response ?? [];
   console.log(dmList);
 
   const friendResponse = await fetch(`${API_URL}/friend`, {
@@ -51,28 +51,27 @@ export default async function MeLayout({
   });
   console.log("[/channels/me/layout] fetch");
   const friendResponseJson = await friendResponse.json();
-  const friend = await friendResponseJson.response;
+  const friend = friendResponseJson.response ?? [];
   console.log("friend =", friend);
   return (
-    <FriendsProvider friendsData={friend}>
-      <div className={"flex flex-1"}>
-        <ResizableSidebar>
-          <SectionTwo>
-            <SectionTwoMain />
-          </SectionTwo>
-          <SectionThree>
-            <DmHydrator dmList={dmList} />
-            <ProfileHydrator />
-            <SectionThreeMain />
-          </SectionThree>
-          <UserProfileBarUi>
-            <UserProfileBar stateIcon="/assets/status-online.svg" statusMessage="온라인" />
-          </UserProfileBarUi>
-        </ResizableSidebar>
-        <SectionOneAndFour>
-          <MainScreenProvider>{children}</MainScreenProvider>
-        </SectionOneAndFour>
-      </div>
-    </FriendsProvider>
+    <div className={"flex flex-1"}>
+      <FriendsHydrator friendsData={friend} />
+      <ResizableSidebar>
+        <SectionTwo>
+          <SectionTwoMain />
+        </SectionTwo>
+        <SectionThree>
+          <DmHydrator dmList={dmList} />
+          <ProfileHydrator />
+          <SectionThreeMain />
+        </SectionThree>
+        <UserProfileBarUi>
+          <UserProfileBar stateIcon="/assets/status-online.svg" statusMessage="온라인" />
+        </UserProfileBarUi>
+      </ResizableSidebar>
+      <SectionOneAndFour>
+        <MainScreenProvider>{children}</MainScreenProvider>
+      </SectionOneAndFour>
+    </div>
   );
 }

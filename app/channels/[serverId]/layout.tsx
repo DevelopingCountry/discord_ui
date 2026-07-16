@@ -1,15 +1,15 @@
-import ResizableSidebar from "@/components/resizable-sidebar";
-import SectionTwo from "@/public/homeDir/ui/sectionTwo";
-import ServerName from "@/components/server-name";
-import SectionThree from "@/public/homeDir/ui/sectionThree";
-import UserProfileBarUi from "@/public/ui/UserProfileBarUi";
-import UserProfileBar from "@/public/components/UserProfileBar";
-import { ChannelHydrator } from "@/components/hydrate/channel-hydrator";
-import ChannelSidebar from "@/components/client/channel-sidebar-client";
+import ResizableSidebar from "@/components/layout/resizable-sidebar";
+import SectionTwo from "@/components/layout/sectionTwo";
+import ServerName from "@/components/server/server-name";
+import SectionThree from "@/components/layout/sectionThree";
+import UserProfileBarUi from "@/components/layout/UserProfileBarUi";
+import UserProfileBar from "@/components/layout/UserProfileBar";
+import { ChannelHydrator } from "@/components/channel/channel-hydrator";
+import ChannelSidebar from "@/components/channel/channel-sidebar";
 import { channel } from "@/components/type/response";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import ChannelSubscriber from "@/components/ChannelSubscriber";
+import ChannelSubscriber from "@/components/channel/ChannelSubscriber";
 import { API_URL } from "@/lib/config";
 
 export default async function ServerRayout({
@@ -40,7 +40,7 @@ export default async function ServerRayout({
 
   return (
     <div className={"flex flex-1"}>
-      <ChannelHydrator channels={channelsData} />
+      <ChannelHydrator channels={channelsData} serverId={serverId} />
       <ChannelSubscriber serverId={serverId} />
       <ResizableSidebar>
         <SectionTwo>

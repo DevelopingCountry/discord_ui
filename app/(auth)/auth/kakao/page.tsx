@@ -2,7 +2,7 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useAuth } from "@/components/context/AuthContext";
+import { useAuth } from "@/components/auth/AuthContext";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function KakaoRedirectPage() {

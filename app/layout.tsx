@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import ReactQueryProvider from "@/components/provider/react-query-provider";
-import AuthGuard from "@/components/AuthGuard";
-import { AuthProvider } from "@/components/context/AuthContext";
+import AuthGuard from "@/components/auth/AuthGuard";
+import { AuthProvider } from "@/components/auth/AuthContext";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",

@@ -1,18 +1,18 @@
 "use client";
 
-import SectionOne from "@/public/homeDir/ui/sectionOne";
-import SectionFour from "@/public/homeDir/ui/sectionFour";
+import SectionOne from "@/components/layout/sectionOne";
+import SectionFour from "@/components/layout/sectionFour";
 import { Bell, Hash, Pencil, Search, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useChannelContext } from "@/components/context/channel-context";
-import { useChannelStore } from "@/components/store/use-channel-store";
+import { useChannelContext } from "@/components/channel/channel-context";
+import { useChannelsQuery } from "@/components/channel/use-channels-query";
 import MessageInput from "@/components/messeage-input";
 import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Image from "next/image";
-import { useAuth } from "@/components/context/AuthContext";
+import { useAuth } from "@/components/auth/AuthContext";
 import { usePathname } from "next/navigation";
-import { VoiceChannelPage } from "@/components/voice-channel-page";
+import { VoiceChannelPage } from "@/components/voice/voice-channel-page";
 import { API_URL } from "@/lib/config";
 import { publish } from "@/lib/socket";
 import { useSocketSubscribe } from "@/components/hooks/useSocketSubscribe";
@@ -84,11 +84,11 @@ function groupMessages(messages: ChannelMessage[]): GroupedDay[] {
 
 export default function ChannelPage() {
   const channelId = useChannelContext()?.channelId;
-  const { channels } = useChannelStore();
+  const serverId = usePathname().split("/")[2];
+  const { data: channels = [] } = useChannelsQuery(serverId);
   const currentChannel = channels.find((ch) => ch.id === channelId);
   const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
   const { userId } = useAuth();
-  const serverId = usePathname().split("/")[2];
 
   const [messages, setMessages] = useState<ChannelMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);

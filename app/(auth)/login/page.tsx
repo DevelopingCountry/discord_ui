@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "@/components/context/AuthContext";
+import { useAuth } from "@/components/auth/AuthContext";
 import { API_URL } from "@/lib/config";
 
 const KAKAO_CLIENT_ID = "d0e33acc669d3d7994242e6879cefb32";
