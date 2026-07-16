@@ -1,11 +1,11 @@
 "use client";
-import SectionOne from "@/public/homeDir/ui/sectionOne";
-import { TabBarComp } from "@/public/homeDir/components/TebBarComp";
-import SectionFour from "@/public/homeDir/ui/sectionFour";
-import SearchFriend from "@/public/homeDir/components/searchFriend";
-import { MainScreenContextProps, useMainScreenContext } from "@/components/context/main-screen-context";
-import AddFriend from "@/components/add-friend";
-import OnlineFriendsPanel from "@/components/online-friends-panel";
+import SectionOne from "@/components/layout/sectionOne";
+import { TabBarComp } from "@/components/friend/TebBarComp";
+import SectionFour from "@/components/layout/sectionFour";
+import SearchFriend from "@/components/friend/searchFriend";
+import { MainScreenContextProps, useMainScreenContext } from "@/components/friend/main-screen-context";
+import AddFriend from "@/components/friend/add-friend";
+import OnlineFriendsPanel from "@/components/friend/online-friends-panel";
 
 export default function Home() {
   const useMainScreenContext1: MainScreenContextProps | null = useMainScreenContext();

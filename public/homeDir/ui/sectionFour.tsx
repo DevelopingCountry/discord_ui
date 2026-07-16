@@ -1,3 +1,0 @@
-export default function SectionFour({ children }: { children: React.ReactNode }) {
-  return <div className="flex flex-col flex-1 bg-discord1and4 overflow-hidden">{children}</div>;
-}

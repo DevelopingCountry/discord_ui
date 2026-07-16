@@ -1,13 +1,13 @@
 "use client";
 
-import SectionFour from "@/public/homeDir/ui/sectionFour";
-import SectionOneAndFour from "@/public/homeDir/ui/sectionOneAndFour";
+import SectionFour from "@/components/layout/sectionFour";
+import SectionOneAndFour from "@/components/layout/sectionOneAndFour";
 import { usePathname } from "next/navigation";
-import { useServerStore } from "@/components/store/use-server-store";
+import { useServersQuery } from "@/components/server/use-servers-query";
 
 export default function Home() {
   const serverId = usePathname().split("/")[2];
-  const { servers } = useServerStore();
+  const { data: servers = [] } = useServersQuery();
   const currentServer = servers.find((server) => server.id === serverId);
   return (
     <SectionOneAndFour>

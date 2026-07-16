@@ -1,11 +1,11 @@
-import SectionOneAndFour from "@/public/homeDir/ui/sectionOneAndFour";
-import { ChannelProvider } from "@/components/context/channel-context";
+import SectionOneAndFour from "@/components/layout/sectionOneAndFour";
+import { ChannelProvider } from "@/components/channel/channel-context";
 
 export default async function ChennalRayout({
   params,
   children,
 }: {
-  params: { serverId: string; channelId: string };
+  params: Promise<{ serverId: string; channelId: string }>;
   children: React.ReactNode;
 }) {
   const { channelId } = await params;

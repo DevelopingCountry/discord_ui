@@ -1,13 +1,13 @@
 import { Bell, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import SectionOne from "@/public/homeDir/ui/sectionOne";
-import SectionFour from "@/public/homeDir/ui/sectionFour";
-import SearchMessage from "@/components/search-message";
-import DmName from "@/components/dm-name";
+import SectionOne from "@/components/layout/sectionOne";
+import SectionFour from "@/components/layout/sectionFour";
+import SearchMessage from "@/components/dm/search-message";
+import DmName from "@/components/dm/dm-name";
 
 type Props = {
   children: React.ReactNode;
-  params: { dmId: string };
+  params: Promise<{ dmId: string }>;
 };
 
 export default async function DmLayout({ children, params }: Props) {

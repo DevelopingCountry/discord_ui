@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
-import SideUi from "@/public/ui/sideUi";
+import SideUi from "@/components/layout/sideUi";
 
-import ServerSidebar from "@/components/server-sidebar";
+import ServerSidebar from "@/components/server/server-sidebar";
 
-import { ServerHydrator } from "@/components/hydrate/server-hydrator";
+import { ServerHydrator } from "@/components/server/server-hydrator";
 import { Profile, server } from "@/components/type/response";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { MyProfileHydrator } from "@/components/hydrate/my-profile-hydrator";
-import NotificationSubscribe from "@/lib/NotificationSubscribe";
+import { MyProfileHydrator } from "@/components/profile/my-profile-hydrator";
+import NotificationSubscribe from "@/components/notification/NotificationSubscribe";
+import NotificationInbox from "@/components/notification/notification-inbox";
 import { API_URL } from "@/lib/config";
 
 export const metadata: Metadata = {
@@ -42,7 +43,7 @@ export default async function ChannelsLayout({
   });
   console.log("[/channels/me/layout] profile fetch");
   const serverss = await serversss.json();
-  const servers: server[] = await serverss.response;
+  const servers: server[] = serverss.response ?? [];
   const profilee = await profileee.json();
   const profile: Profile = await profilee.response;
   console.log("servers", servers);
@@ -51,7 +52,8 @@ export default async function ChannelsLayout({
     <>
       <ServerHydrator servers={servers} />
       <MyProfileHydrator myProfile={profile} />
-      <NotificationSubscribe myProfile={profile} />
+      <NotificationSubscribe />
+      <NotificationInbox />
       <div className="bg-discordSidebar w-screen h-screen flex overflow-x-hidden overflow-y-hidden">
         <SideUi>
           <ServerSidebar />
